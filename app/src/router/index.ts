@@ -143,6 +143,7 @@ router.beforeEach((to, from, next) => {
                 return
               }
             } else {
+              console.log(`Looking for [${to.name.toString()}] from ${JSON.stringify(store.getters['storeCredential/Getter___credential'], null, 2)}`)
               next({
                 path: '/403',
                 query: {

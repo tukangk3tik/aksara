@@ -311,7 +311,7 @@ import AccountService from '@/modules/setting/account/service'
 
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
-  name: 'AccountEdit',
+  name: 'CoreAccountEdit',
   components: {
     Card,
     Panel,

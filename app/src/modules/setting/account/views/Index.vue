@@ -48,6 +48,7 @@
                   <span class="p-buttonset wrap_content">
                     <Button
                       v-if="credential.permission.btnAccountEdit !== undefined"
+                      severity="success"
                       class="button p-button-success button-sm button-raised"
                       @click="accountEdit(slotProps.data.id)"
                     >
@@ -55,10 +56,11 @@
                     </Button>
                     <Button
                       v-if="credential.permission.btnAccountDelete !== undefined"
+                      severity="danger"
                       class="button button-danger button-sm button-raised"
                       @click="accountDelete($event, slotProps.data.id)"
                     >
-                      <span class="material-icons">delete</span>
+                      <span class="material-icons">delete</span> Delete
                     </Button>
                   </span>
                 </template>

@@ -197,7 +197,7 @@ import { getCurrentTimestamp } from '@/util/time'
 
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
-  name: 'AccountAdd',
+  name: 'CoreAccountAdd',
   components: {
     Card,
     InputText,

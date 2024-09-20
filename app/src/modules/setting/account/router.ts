@@ -32,7 +32,7 @@ const moduleRoute = [
       },
       {
         path: 'add',
-        name: 'AccountAdd',
+        name: 'CoreAccountAdd',
         meta: {
           pageTitle: 'Account Add',
           requiresAuth: true,
@@ -50,7 +50,7 @@ const moduleRoute = [
       },
       {
         path: 'edit/:id',
-        name: 'AccountEdit',
+        name: 'CoreAccountEdit',
         meta: {
           pageTitle: 'Account Edit',
           requiresAuth: true,
