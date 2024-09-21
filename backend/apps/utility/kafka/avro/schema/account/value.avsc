@@ -1,0 +1,52 @@
+{
+  "type": "record",
+  "name": "Account",
+  "namespace": "com.horas.account",
+  "fields": [
+    {
+      "name": "code",
+      "type": "string"
+    },
+    {
+      "name": "email",
+      "type": "string"
+    },
+    {
+      "name": "authority",
+      "type": {
+        "type": "record",
+        "name": "child",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "first_name",
+      "type": "string"
+    },
+    {
+      "name": "last_name",
+      "type": "string"
+    },
+    {
+      "name": "phone",
+      "type": "string"
+    },
+    {
+      "name": "password",
+      "type": "string"
+    }
+  ]
+}

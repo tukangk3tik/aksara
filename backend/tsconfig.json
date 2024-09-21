@@ -1,0 +1,78 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@mock/*": [
+        "./apps/mock/*"
+      ],
+      "@schemas/*": [
+        "./apps/schemas/*"
+      ],
+      "@filters/*": [
+        "./apps/filters/*"
+      ],
+      "@pipes/*": [
+        "./apps/pipes/*"
+      ],
+      "@gateway_core/*": [
+        "./apps/gateway_core/src/modules/*"
+      ],
+      "@gateway_inventory/*": [
+        "./apps/gateway_inventory/src/modules/*"
+      ],
+      "@stock/*": [
+        "./apps/stock/src/*"
+      ],
+      "@inventory/*": [
+        "./apps/inventory/src/*"
+      ],
+      "@log/*": [
+        "./apps/log/src/*"
+      ],
+      "@security/*": [
+        "./apps/security/*"
+      ],
+      "@configuration/*": [
+        "./apps/configuration/*"
+      ],
+      "@socket/*": [
+        "./apps/socket/src/*"
+      ],
+      "@seeds/*": [
+        "./apps/gateway/src/seeds/*"
+      ],
+      "@interceptors/*": [
+        "./apps/interceptors/*"
+      ],
+      "@guards/*": [
+        "./apps/guards/*"
+      ],
+      "@decorators/*": [
+        "./apps/decorators/*"
+      ],
+      "@utility/*": [
+        "./apps/utility/*"
+      ],
+      "@shared/*": [
+        "./apps/shared/*"
+      ]
+    }
+  }
+}
