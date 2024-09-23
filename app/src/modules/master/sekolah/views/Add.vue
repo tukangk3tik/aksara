@@ -1,63 +1,99 @@
 <template>
   <div class="grid">
     <div class="col-12">
-      <Card>
-        <template #title>Tambah Sekolah</template>
+      <Card class="slim">
         <template #content>
-          <div class="grid">
-            <div class="col-4">
-
-            </div>
-            <div class="col-8 form-mode">
-              <div class="inputgroup">
-                <span class="inputgroup-addon">
-                  <span class="material-icons-outlined material-symbols-outlined">mail</span>
-                </span>
-                <!-- <InputText class="inputtext-sm" @input="updateAccount($event.target.value)" v-model="accountDetail.email"
-                  placeholder="Email" /> -->
-                <InputText
-                  v-model="formData.email"
-                  class="inputtext-sm"
-                  placeholder="Email"
-                />
+          <Panel
+            header="Tambah Master Data Sekolah"
+            :toggleable="false"
+          >
+            <template #icons>
+              <Button class="p-button-text p-button-info p-button-rounded p-button-raised button-sm"><span class="material-icons">help</span>
+                Info</Button>
+            </template>
+          </Panel>
+          <TabView>
+            <TabPanel header="Main Info">
+              <div class="grid">
+                <div class="col-8 form-mode">
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">badge</span>-->
+                      NPSN
+                    </span>
+                    <InputText
+                      v-model="formData.npsn"
+                      class="inputtext-sm"
+                      placeholder="NPSN"
+                    />
+                  </div>
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">id_card</span>-->
+                      Nama
+                    </span>
+                    <InputText
+                      v-model="formData.nama"
+                      class="inputtext-sm"
+                      placeholder="Nama Sekolah"
+                    />
+                  </div>
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">grade</span>-->
+                      BP
+                    </span>
+                    <InputText
+                      v-model="formData.bp"
+                      class="inputtext-sm"
+                      placeholder="BP"
+                    />
+                  </div>
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">checklist</span>-->
+                      Tipe
+                    </span>
+                    <Dropdown
+                      v-model="formData.type"
+                      :options="option_type"
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder="Tipe"
+                    />
+                  </div>
+                </div>
+                <div class="col-4 form-mode">
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">library_books</span>-->
+                      Jlh Rombel
+                    </span>
+                    <InputText
+                      v-model="formData.jlh_rombel"
+                      class="inputtext-sm"
+                      placeholder="Jlh Rombel"
+                    />
+                  </div>
+                  <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon">
+<!--                      <span class="material-icons-outlined material-symbols-outlined">person</span>-->
+                      Jlh Guru
+                    </span>
+                    <InputText
+                      v-model="formData.jlh_guru"
+                      class="inputtext-sm"
+                      placeholder="Jlh Guru"
+                    />
+                  </div>
+                </div>
               </div>
-              <div class="inputgroup">
-                <span class="inputgroup-addon">
-                  <span class="material-icons-outlined material-symbols-outlined">person</span>
-                </span>
-                <InputText
-                  v-model="formData.first_name"
-                  class="inputtext-sm"
-                  placeholder="First Name"
-                />
-                <InputText
-                  v-model="formData.last_name"
-                  class="inputtext-sm"
-                  placeholder="Last Name"
-                />
-              </div>
-              <div class="inputgroup">
-                <span class="inputgroup-addon">
-                  <span class="material-icons-outlined material-symbols-outlined">supervised_user_circle</span>
-                </span>
-                <Dropdown
-                  v-model="formData.authority"
-                  :options="authorityData"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Select authority"
-                />
-              </div>
-              <Button
-                class="button button-info button-sm button-raised"
-                @click="updateAccountData"
-              >
-                <span class="material-icons">fact_check</span> Apply from authority
-              </Button>
-            </div>
-            <div class="col-12">
-              <div class="d-flex jc-between">
-                <div>
+            </TabPanel>
+          </TabView>
+          <div class="p-grid">
+            <div class="p-col-12">
+              <div class="flex jc-between">
+                <div class="flex-initial flex align-items-center justify-content-center m-2 px-5 py-3">
                   <Button
                     type="button"
                     class="button-raised button-sm p-button-danger px-3"
@@ -66,10 +102,14 @@
                     <span class="material-icons-outlined material-symbols-outlined">arrow_back</span> Back
                   </Button>
                 </div>
-                <div v-if="allowSave === true">
+                <div class="flex-grow-1 flex align-items-center justify-content-center m-2 px-5 py-3"></div>
+                <div
+                  v-if="allowSave === true"
+                  class="flex-initial flex align-items-right justify-content-center m-2 px-5 py-3"
+                >
                   <Button
                     type="button"
-                    class="button-raised button-sm button-info px-3"
+                    class="button-raised button-sm p-button-info px-3"
                     @click="updateAccountData($event)"
                   >
                     <span class="material-icons-outlined material-symbols-outlined">check_circle</span> Save Data
@@ -80,7 +120,8 @@
           </div>
         </template>
       </Card>
-      <ConfirmPopup></ConfirmPopup>
+      <ConfirmPopup group="confirm_changes"></ConfirmPopup>
+      <ConfirmDialog group="keep_editing"></ConfirmDialog>
     </div>
     <Dialog
       v-model:visible="displayEditorImage"
@@ -104,48 +145,54 @@
 </template>
 <script>
 import Card from 'primevue/card'
+import Panel from 'primevue/panel'
 import InputText from 'primevue/inputtext'
-import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Column from 'primevue/column'
+import Dropdown from 'primevue/dropdown'
 import ConfirmPopup from 'primevue/confirmpopup'
+import ConfirmDialog from 'primevue/confirmdialog'
 import Dialog from 'primevue/dialog'
+import TabView from 'primevue/tabview'
+import TabPanel from 'primevue/tabpanel'
 import Cropper from '@/components/Cropper.vue'
-import { getCurrentTimestamp } from '@/util/time'
+import MasterSekolahService from '@/modules/master/sekolah/service'
 
-import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
   name: 'MasterSekolahAdd',
   components: {
     Card,
+    Panel,
     InputText,
     Button,
     Dropdown,
     ConfirmPopup,
-    Checkbox,
-    Column,
+    ConfirmDialog,
     Cropper,
     Dialog,
+    TabView,
+    TabPanel,
   },
   data() {
     return {
       displayEditorImage: false,
       formData: {
-        id: 0,
-        email: '',
-        authority: '',
-        first_name: '',
-        last_name: '',
-        image: '',
-        menuTree: [],
+        npsn: '',
+        nama: '',
+        type: '',
+        status: '',
+        bp: '',
+        jlh_guru: 0,
+        jlh_rombel: 0,
+        __v: 0,
       },
       allowSave: false,
-      authorityData: [],
-      selectedParent: {},
-      selectedMenu: [],
-      selectedPage: [],
-      selectedPerm: [],
+      option_type: [{
+        id: 'negeri',
+        name: 'Negeri'
+      }, {
+        id: 'swasta',
+        name: 'Swasta'
+      }],
       lazyParams: {},
       selectedNode: {},
       filtersNode: {
@@ -160,106 +207,79 @@ export default {
       ],
     }
   },
-  computed: {
-    // ...mapState('accountModule', ['menu_list', 'menu_tree']),
-    // ...mapGetters({
-    //   menuTree: 'accountModule/getMenuTree',
-    //   accountDetail: 'accountModule/getAccountDetail',
-    //   authorityList: 'accountModule/getAuthorityList',
-    // }),
-  },
-  // watch: {
-  //   accountDetail: {
-  //     handler(getDetail) {
-  //       if (getDetail) {
-  //         //
-  //       } else {
-  //         this.allowSave = false
-  //       }
-  //     },
-  //     immediate: true,
-  //   },
-  // },
   async mounted() {
-    this.allowSave = false
-    // this.$store.dispatch('accountModule/fetchMenu')
-    // await this.$store.dispatch(
-    //   'accountModule/fetchAccountDetail',
-    //   this.$route.query.id
-    // )
-    // await this.$store.dispatch('accountModule/fetchMenuTree')
-    // await this.$store.dispatch('accountModule/fetchAuthority')
-    this.displayEditorImage = false
+    this.allowSave = true
   },
   methods: {
-    ...mapActions('accountModule', [
-      'updateAccount',
-      'updatePermission',
-      'updateAccess',
-    ]),
     back() {
       this.$router.push('/master/sekolah')
     },
+    setImageData(value) {
+      this.formData.image_edit = true
+      this.formData.image = value
+    },
+    toggleEditImageWindow() {
+      this.displayEditorImage = !this.displayEditorImage
+    },
+    resetForm() {
+      this.formData = {
+        npsn: '',
+        nama: '',
+        type: '',
+        status: '',
+        bp: '',
+        jlh_guru: 0,
+        jlh_rombel: 0,
+        __v: 0,
+      }
+    },
     updateAccountData: function (event) {
+      const target = event.target
+
+      const confirmation = this.$confirm
       if (this.allowSave) {
-        // this.formData.image = this.formData.image.replace(/^data:image\/\w+;base64,/, '')
-        this.updateAccount(this.formData).then((response) => {
-          if (response.status === 200) {
-            const responseAccess = []
-            const responsePermission = []
-            // // Update Access and Permission if exists
-            for (const a in this.selectedMenu) {
-              this.updateAccess({
-                account: this.$route.query.id,
-                menu: this.selectedMenu[a],
-              }).then((response) => {
-                responseAccess.push(response)
+        confirmation.require({
+          group: 'confirm_changes',
+          target: target,
+          message: `Tambah data sekolah?`,
+          icon: 'pi pi-exclamation-triangle',
+          acceptClass: 'button-success',
+          acceptIcon: 'pi pi-check-circle',
+          acceptLabel: 'Ya',
+          rejectLabel: 'Batal',
+          rejectIcon: 'pi pi-times-circle',
+          accept: async () => {
+            await MasterSekolahService.addSekolah(this.formData)
+              .then(async (response) => {
+                this.$confirm.require({
+                  group: 'keep_editing',
+                  message: `${response.message}. Tambah data sekolah yang lain?`,
+                  header: 'Tambah kembali data sekolah',
+                  icon: 'pi pi-exclamation-triangle',
+                  acceptClass: 'p-button-success',
+                  rejectClass: 'p-button-warning',
+                  acceptLabel: 'Ya',
+                  acceptIcon: 'pi pi-check-circle',
+                  rejectLabel: 'Sudah selesai',
+                  rejectIcon: 'pi pi-times-circle',
+                  accept: () => {
+                    this.resetForm()
+                  },
+                  reject: () => {
+                    this.$router.push('/master/sekolah')
+                  },
+                  onHide: () => {
+                    //Callback to execute when dialog is hidden
+                  },
+                })
               })
-            }
-
-            for (const a in this.selectedPerm) {
-              this.updatePermission({
-                account: this.$route.query.id,
-                permission: this.selectedPerm[a],
-              }).then((response) => {
-                responsePermission.push(response)
-              })
-            }
-
-            this.$store.dispatch('accountModule/fetchMenuTree', this.lazyParams)
-            this.$confirm.require({
-              target: event.target,
-              message: `${response.data.message}. Back to account list?`,
-              icon: 'pi pi-exclamation-triangle',
-              acceptClass: 'button-success',
-              acceptLabel: 'Yes',
-              rejectLabel: 'Keep Editing',
-              accept: () => {
-                this.$router.push('/account')
-              },
-              reject: () => {
-                // callback to execute when user rejects the action
-              },
-            })
-          }
+          },
+          reject: () => {
+            // callback to execute when user rejects the action
+          },
         })
       }
     },
   },
 }
 </script>
-<style>
-.profile-display {
-  position: relative;
-  background: red;
-}
-
-.profile-display img {
-  position: absolute;
-  border-radius: 100%;
-  width: 200px;
-  height: 200px;
-  background: #f2f2f2;
-  margin: 0 25%;
-}
-</style>

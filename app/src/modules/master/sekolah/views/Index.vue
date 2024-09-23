@@ -69,6 +69,7 @@
               :sortable="true"
               style="width: 12.5% !important;"
             >
+              <!--              eslint-disable-next-line -->
               <template #filter="{ filterModel, filterCallback }">
                 <InputText
                   type="text"
@@ -89,6 +90,7 @@
               filterMatchMode="contains"
               :sortable="true"
             >
+              <!--              eslint-disable-next-line -->
               <template #filter="{ filterModel, filterCallback }">
                 <InputText
                   type="text"
@@ -227,7 +229,13 @@ export default {
       this.$router.push('/master/sekolah/add')
     },
     itemEditForm(id) {
-      this.$router.push(`/master/sekolah/edit/${id}`)
+      // this.$router.push(`/master/sekolah/edit/${id}`)
+      this.$router.push({
+        path: `/master/sekolah/edit/${id}`,
+        query: {
+          id: id,
+        },
+      })
     },
     itemDelete(event, id) {
       this.$confirm.require({
@@ -237,8 +245,11 @@ export default {
         acceptClass: 'button-danger',
         acceptLabel: 'Ya. Hapus',
         rejectLabel: 'Batal',
-        accept: () => {
+        accept: async () => {
           this.loading = true
+          await MasterSekolahService.deleteSekolah(id).then((detail) => {
+            this.loading = false
+          })
         },
         reject: () => {
           // Reject
