@@ -35,6 +35,7 @@
               alt="horas"
             />
           </div>
+          <!--  eslint-disable-next-line vue/no-v-html -->
           <div class="print" v-html="targetPrint"></div>
           <div class="print-sign">
             <div class="grid">

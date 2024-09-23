@@ -38,6 +38,36 @@ class MasterSekolahService {
       return Promise.resolve(response.data)
     })
   }
+
+  async addSekolah(data) {
+    return await api({requiresAuth: true}).post(`${process.env.VUE_APP_APIGATEWAY}/v1/master/sekolah`, data)
+      .then((response: any) => {
+      return Promise.resolve(response.data)
+    })
+      .catch((e) => {
+      return Promise.reject(e)
+    })
+  }
+
+  async editSekolah(id, data) {
+    return await api({requiresAuth: true}).patch(`${process.env.VUE_APP_APIGATEWAY}/v1/master/sekolah/${id}`, data)
+      .then((response: any) => {
+        return Promise.resolve(response.data)
+      })
+      .catch((e) => {
+        return Promise.reject(e)
+      })
+  }
+
+  async deleteSekolah(id, data) {
+    return await api({requiresAuth: true}).delete(`${process.env.VUE_APP_APIGATEWAY}/v1/master/sekolah/${id}`)
+      .then((response: any) => {
+        return Promise.resolve(response.data)
+      })
+      .catch((e) => {
+        return Promise.reject(e)
+      })
+  }
 }
 
 export default new MasterSekolahService()
