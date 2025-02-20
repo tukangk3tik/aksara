@@ -1,0 +1,25 @@
+
+
+migrate-up:
+	migrate -path db/migrations -database "mysql://root:indonesiaC3rdas#2026@tcp(localhost:3307)/cerdas_cek" -verbose up
+
+migrate-up1:
+	migrate -path db/migrations -database "mysql://root:indonesiaC3rdas#2026@tcp(localhost:3307)/cerdas_cek" -verbose up 1
+
+# migrate-down:
+#	migrate -path db/migrations -database "mysql://root:indonesiaC3rdas#2026@tcp(localhost:3307)/cerdas_cek" -verbose down 
+
+migrate-down1:
+	migrate -path db/migrations -database "mysql://root:indonesiaC3rdas#2026@tcp(localhost:3307)/cerdas_cek" -verbose down 1
+
+migrate-seed:
+	migrate -path db/seed -database "mysql://root:indonesiaC3rdas#2026@tcp(localhost:3307)/cerdas_cek" -verbose up 1
+
+sqlc:
+	sqlc generate
+
+test:
+	go test -v -cover ./...
+
+server:
+	go run main.go
