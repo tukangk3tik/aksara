@@ -30,7 +30,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 type CreateSchoolParams struct {
 	ID         uint64         `json:"id"`
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	OfficeID   uint64         `json:"office_id"`
 	ProvinceID int32          `json:"province_id"`
@@ -381,7 +381,7 @@ WHERE id = ?
 `
 
 type UpdateSchoolParams struct {
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	OfficeID   uint64         `json:"office_id"`
 	ProvinceID int32          `json:"province_id"`

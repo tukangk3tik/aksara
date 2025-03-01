@@ -29,12 +29,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 type CreateOfficeParams struct {
 	ID         uint64         `json:"id"`
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	ProvinceID int32          `json:"province_id"`
 	RegencyID  int32          `json:"regency_id"`
 	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
+	Email      string         `json:"email"`
 	Phone      sql.NullString `json:"phone"`
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`
@@ -69,15 +69,29 @@ func (q *Queries) DeleteOffice(ctx context.Context, id uint64) error {
 }
 
 const getOffice = `-- name: GetOffice :one
-SELECT id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM offices 
-WHERE id = ? 
-AND deleted_at IS NULL 
+SELECT  a.id, a.code, a.name, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by FROM offices a
+WHERE a.id = ? 
+AND a.deleted_at IS NULL 
 LIMIT 1
 `
 
-func (q *Queries) GetOffice(ctx context.Context, id uint64) (Office, error) {
+type GetOfficeRow struct {
+	ID         uint64         `json:"id"`
+	Code       string         `json:"code"`
+	Name       string         `json:"name"`
+	ProvinceID int32          `json:"province_id"`
+	RegencyID  int32          `json:"regency_id"`
+	DistrictID int32          `json:"district_id"`
+	Email      string         `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Address    sql.NullString `json:"address"`
+	LogoUrl    sql.NullString `json:"logo_url"`
+	CreatedBy  uint64         `json:"created_by"`
+}
+
+func (q *Queries) GetOffice(ctx context.Context, id uint64) (GetOfficeRow, error) {
 	row := q.db.QueryRowContext(ctx, getOffice, id)
-	var i Office
+	var i GetOfficeRow
 	err := row.Scan(
 		&i.ID,
 		&i.Code,
@@ -90,17 +104,17 @@ func (q *Queries) GetOffice(ctx context.Context, id uint64) (Office, error) {
 		&i.Address,
 		&i.LogoUrl,
 		&i.CreatedBy,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const listAllOffices = `-- name: ListAllOffices :many
-SELECT id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM offices
-WHERE deleted_at IS NULL 
-ORDER BY id
+SELECT a.id, a.code, a.name, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as province, c.name as regency, d.name as district FROM offices a
+JOIN loc_provinces b ON a.province_id = b.id
+JOIN loc_regencies c ON a.regency_id = c.id
+LEFT JOIN loc_districts d ON a.district_id = d.id
+WHERE a.deleted_at IS NULL 
+ORDER BY a.id
 LIMIT ? OFFSET ?
 `
 
@@ -109,15 +123,32 @@ type ListAllOfficesParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListAllOffices(ctx context.Context, arg ListAllOfficesParams) ([]Office, error) {
+type ListAllOfficesRow struct {
+	ID         uint64         `json:"id"`
+	Code       string         `json:"code"`
+	Name       string         `json:"name"`
+	ProvinceID int32          `json:"province_id"`
+	RegencyID  int32          `json:"regency_id"`
+	DistrictID int32          `json:"district_id"`
+	Email      string         `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Address    sql.NullString `json:"address"`
+	LogoUrl    sql.NullString `json:"logo_url"`
+	CreatedBy  uint64         `json:"created_by"`
+	Province   sql.NullString `json:"province"`
+	Regency    sql.NullString `json:"regency"`
+	District   sql.NullString `json:"district"`
+}
+
+func (q *Queries) ListAllOffices(ctx context.Context, arg ListAllOfficesParams) ([]ListAllOfficesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listAllOffices, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Office{}
+	items := []ListAllOfficesRow{}
 	for rows.Next() {
-		var i Office
+		var i ListAllOfficesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Code,
@@ -130,9 +161,9 @@ func (q *Queries) ListAllOffices(ctx context.Context, arg ListAllOfficesParams) 
 			&i.Address,
 			&i.LogoUrl,
 			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
+			&i.Province,
+			&i.Regency,
+			&i.District,
 		); err != nil {
 			return nil, err
 		}
@@ -303,6 +334,18 @@ func (q *Queries) ListOfficesByRegency(ctx context.Context, arg ListOfficesByReg
 	return items, nil
 }
 
+const totalListAllOffices = `-- name: TotalListAllOffices :one
+SELECT COUNT(*) as total_items FROM offices
+WHERE deleted_at IS NULL
+`
+
+func (q *Queries) TotalListAllOffices(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalListAllOffices)
+	var total_items int64
+	err := row.Scan(&total_items)
+	return total_items, err
+}
+
 const updateOffice = `-- name: UpdateOffice :execresult
 UPDATE offices
 SET code = ?,
@@ -319,12 +362,12 @@ WHERE id = ?
 `
 
 type UpdateOfficeParams struct {
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	ProvinceID int32          `json:"province_id"`
 	RegencyID  int32          `json:"regency_id"`
 	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
+	Email      string         `json:"email"`
 	Phone      sql.NullString `json:"phone"`
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`

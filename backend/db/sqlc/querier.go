@@ -16,11 +16,11 @@ type Querier interface {
 	DeleteOffice(ctx context.Context, id uint64) error
 	DeleteSchool(ctx context.Context, id uint64) error
 	DeleteUser(ctx context.Context, id uint64) error
-	GetOffice(ctx context.Context, id uint64) (Office, error)
+	GetOffice(ctx context.Context, id uint64) (GetOfficeRow, error)
 	GetSchool(ctx context.Context, id uint64) (School, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserById(ctx context.Context, id uint64) (User, error)
-	ListAllOffices(ctx context.Context, arg ListAllOfficesParams) ([]Office, error)
+	ListAllOffices(ctx context.Context, arg ListAllOfficesParams) ([]ListAllOfficesRow, error)
 	ListAllSchools(ctx context.Context, arg ListAllSchoolsParams) ([]School, error)
 	ListOfficesByDistrict(ctx context.Context, arg ListOfficesByDistrictParams) ([]Office, error)
 	ListOfficesByProvince(ctx context.Context, arg ListOfficesByProvinceParams) ([]Office, error)
@@ -29,6 +29,10 @@ type Querier interface {
 	ListSchoolsByOffice(ctx context.Context, arg ListSchoolsByOfficeParams) ([]School, error)
 	ListSchoolsByProvince(ctx context.Context, arg ListSchoolsByProvinceParams) ([]School, error)
 	ListSchoolsByRegency(ctx context.Context, arg ListSchoolsByRegencyParams) ([]School, error)
+	LocationDistrictByRegency(ctx context.Context, regencyID int32) ([]LocDistrict, error)
+	LocationProvince(ctx context.Context) ([]LocProvince, error)
+	LocationRegencyByProvince(ctx context.Context, provinceID int32) ([]LocRegency, error)
+	TotalListAllOffices(ctx context.Context) (int64, error)
 	UpdateOffice(ctx context.Context, arg UpdateOfficeParams) (sql.Result, error)
 	UpdateSchool(ctx context.Context, arg UpdateSchoolParams) (sql.Result, error)
 }
