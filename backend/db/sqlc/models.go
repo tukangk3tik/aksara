@@ -29,12 +29,12 @@ type LocRegency struct {
 
 type Office struct {
 	ID         uint64         `json:"id"`
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	ProvinceID int32          `json:"province_id"`
 	RegencyID  int32          `json:"regency_id"`
 	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
+	Email      string         `json:"email"`
 	Phone      sql.NullString `json:"phone"`
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`
@@ -46,7 +46,7 @@ type Office struct {
 
 type School struct {
 	ID         uint64         `json:"id"`
-	Code       sql.NullString `json:"code"`
+	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	OfficeID   uint64         `json:"office_id"`
 	ProvinceID int32          `json:"province_id"`

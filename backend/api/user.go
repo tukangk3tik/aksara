@@ -1,9 +1,13 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tukangk3tik/aksara/dto/response"
+	"github.com/tukangk3tik/aksara/utils"
+	"go.uber.org/zap"
 )
 
 type LoginUserRequest struct {
@@ -19,20 +23,48 @@ type LoginUserResponse struct {
 func (server *Server) loginUser(ctx *gin.Context) {
 	var req LoginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, ErrorResponse{http.StatusBadRequest, err.Error()})
+		ctx.JSON(http.StatusBadRequest, response.BuildErrorResponse("BAD_REQUEST", utils.ErrorCodeMap["BAD_REQUEST"], nil))
 		return
 	}
 
-	result, err := server.sm.LoginUser(ctx, req.Email, req.Password)
+	traceID := ctx.MustGet("trace_id").(string)
+
+	user, err := server.store.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, ErrorResponse{http.StatusUnauthorized, err.Error()})
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusUnauthorized, response.BuildErrorResponse("NOT_FOUND", utils.ErrorCodeMap["NOT_FOUND"], nil))
+			return
+		}
+		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get user", traceID), zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, SuccessResponse{
-		http.StatusOK, "success", LoginUserResponse{
-			AccessToken:  result.AccessToken,
-			RefreshToken: result.RefreshToken,
+	err = utils.CheckPassword(req.Password, user.Password)
+	if err != nil {
+		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to check password", traceID), zap.Error(err))
+		ctx.JSON(http.StatusUnauthorized, response.BuildErrorResponse("WRONG_PASSWORD", utils.ErrorCodeMap["WRONG_PASSWORD"], nil))
+		return
+	}
+
+	accessToken, _, err := server.tokenMaker.GenerateToken(user.ID, server.config.AccessTokenDuration)
+	if err != nil {
+		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to generate access token", traceID), zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
+		return
+	}
+
+	refreshToken, _, err := server.tokenMaker.GenerateToken(user.ID, server.config.RefreshTokenDuration)
+	if err != nil {
+		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to generate refresh token", traceID), zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response.SuccessResponse{
+		Data: LoginUserResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
 		}})
 
 	/*
