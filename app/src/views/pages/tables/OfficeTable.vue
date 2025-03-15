@@ -1,26 +1,14 @@
 <script setup>
-const offices = [
-  {
-    id: 1,
-    code: 'KP01',
-    name: 'Kantor Pusat',
-    email: 'kantor_pusat@cerdascek.com',
-    phone: '+62',
-    province: 'DKI JAKARTA',
-    regency: 'KOTA ADM. JAKARTA PUSAT',
-    district: 'Kemayoran',
-  },
-  {
-    id: 2,
-    code: 'KDB01',
-    name: 'Kantor Kab. Belu',
-    email: 'kd_belu01@cerdascek.com',
-    phone: '+62',
-    province: 'Nusa Tenggara Timur',
-    regency: 'Kab. Belu',
-    district: 'Kota Atambua',
-  },
-]
+
+const props = defineProps({
+  items: Array,
+  totalItems: Number,
+  loading: Boolean,
+})
+
+// Pagination state
+const itemsPerPage = defineModel("itemsPerPage")
+const page = defineModel("page")
 
 const headers = [
   { title: 'Nama', key: 'name' },
@@ -30,21 +18,18 @@ const headers = [
   { title: 'Provinsi', key: 'province' },
   { title: 'Kabupaten/Kota', key: 'regency' },
   { title: 'Kecamatan', key: 'district' },
-];
-
-const totalItem = ref(0)
-const itemPerPage = ref(10)
-const loading = ref(false)
-
-// need to call the API
+]
 </script>
 
 <template>
   <VDataTable 
     :headers="headers" 
-    :items="offices"
+    :items="props.items"
+    :items-per-page="itemsPerPage"
+    :page="page"
+    :items-length="totalItems"
+    :server-items-length="totalItems"
     :loading="loading"
     loading-text="Loading... Mohon Tunggu"
-
-    />
+  />
 </template>

@@ -101,8 +101,8 @@ func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 
 	officeGroup := router.Group("/offices")
 	officeGroup.Use(security.AuthorizeJwt(tokenMaker))
-	officeGroup.GET("/", server.getOffices)
-	officeGroup.POST("/", server.createOffice)
+	officeGroup.GET("", server.getOffices)
+	officeGroup.POST("", server.createOffice)
 	officeGroup.PUT("/:id", server.updateOffice)
 	officeGroup.DELETE("/:id", server.deleteOffice)
 
