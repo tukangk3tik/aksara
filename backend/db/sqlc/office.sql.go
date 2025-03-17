@@ -135,8 +135,8 @@ type ListAllOfficesRow struct {
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`
 	CreatedBy  uint64         `json:"created_by"`
-	Province   sql.NullString `json:"province"`
-	Regency    sql.NullString `json:"regency"`
+	Province   string         `json:"province"`
+	Regency    string         `json:"regency"`
 	District   sql.NullString `json:"district"`
 }
 

@@ -99,6 +99,14 @@ func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 
 	router.POST("/users/login", server.loginUser)
 
+	// location router
+	locGroup := router.Group("/loc")
+	locGroup.Use(security.AuthorizeJwt(tokenMaker))
+	locGroup.GET("/provinces", server.fetchProvinces)
+	locGroup.GET("/regencies", server.fetchRegencyByProvince)
+	locGroup.GET("/districts", server.fetchDistrictByRegency)
+
+	// office router
 	officeGroup := router.Group("/offices")
 	officeGroup.Use(security.AuthorizeJwt(tokenMaker))
 	officeGroup.GET("", server.getOffices)

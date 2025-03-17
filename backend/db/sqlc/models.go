@@ -10,21 +10,21 @@ import (
 )
 
 type LocDistrict struct {
-	ID         int32          `json:"id"`
-	Name       sql.NullString `json:"name"`
-	ProvinceID int32          `json:"province_id"`
-	RegencyID  int32          `json:"regency_id"`
+	ID         int32  `json:"id"`
+	Name       string `json:"name"`
+	ProvinceID int32  `json:"province_id"`
+	RegencyID  int32  `json:"regency_id"`
 }
 
 type LocProvince struct {
-	ID   int32          `json:"id"`
-	Name sql.NullString `json:"name"`
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
 }
 
 type LocRegency struct {
-	ID         int32          `json:"id"`
-	Name       sql.NullString `json:"name"`
-	ProvinceID int32          `json:"province_id"`
+	ID         int32  `json:"id"`
+	Name       string `json:"name"`
+	ProvinceID int32  `json:"province_id"`
 }
 
 type Office struct {

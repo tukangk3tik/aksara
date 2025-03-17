@@ -11,11 +11,25 @@ import (
 
 const locationDistrictByRegency = `-- name: LocationDistrictByRegency :many
 SELECT id, name, province_id, regency_id FROM loc_districts
-WHERE regency_id = ?
+WHERE regency_id = ? 
+AND name LIKE ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) LocationDistrictByRegency(ctx context.Context, regencyID int32) ([]LocDistrict, error) {
-	rows, err := q.db.QueryContext(ctx, locationDistrictByRegency, regencyID)
+type LocationDistrictByRegencyParams struct {
+	RegencyID int32  `json:"regency_id"`
+	Name      string `json:"name"`
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+}
+
+func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDistrictByRegencyParams) ([]LocDistrict, error) {
+	rows, err := q.db.QueryContext(ctx, locationDistrictByRegency,
+		arg.RegencyID,
+		arg.Name,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +57,19 @@ func (q *Queries) LocationDistrictByRegency(ctx context.Context, regencyID int32
 }
 
 const locationProvince = `-- name: LocationProvince :many
-SELECT id, name FROM loc_provinces
+SELECT id, name FROM loc_provinces 
+WHERE name LIKE ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) LocationProvince(ctx context.Context) ([]LocProvince, error) {
-	rows, err := q.db.QueryContext(ctx, locationProvince)
+type LocationProvinceParams struct {
+	Name   string `json:"name"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
+}
+
+func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvinceParams) ([]LocProvince, error) {
+	rows, err := q.db.QueryContext(ctx, locationProvince, arg.Name, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -71,11 +93,25 @@ func (q *Queries) LocationProvince(ctx context.Context) ([]LocProvince, error) {
 
 const locationRegencyByProvince = `-- name: LocationRegencyByProvince :many
 SELECT id, name, province_id FROM loc_regencies 
-WHERE province_id = ?
+WHERE province_id = ? 
+AND name LIKE ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) LocationRegencyByProvince(ctx context.Context, provinceID int32) ([]LocRegency, error) {
-	rows, err := q.db.QueryContext(ctx, locationRegencyByProvince, provinceID)
+type LocationRegencyByProvinceParams struct {
+	ProvinceID int32  `json:"province_id"`
+	Name       string `json:"name"`
+	Limit      int32  `json:"limit"`
+	Offset     int32  `json:"offset"`
+}
+
+func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg LocationRegencyByProvinceParams) ([]LocRegency, error) {
+	rows, err := q.db.QueryContext(ctx, locationRegencyByProvince,
+		arg.ProvinceID,
+		arg.Name,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
