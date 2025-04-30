@@ -1,0 +1,12 @@
+CREATE TABLE sessions (
+  id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED,
+  refresh_token VARCHAR(255) NOT NULL,
+  user_agent VARCHAR(255) NOT NULL,
+  client_ip VARCHAR(255) NOT NULL DEFAULT '0001-01-01 00:00:00Z', 
+  is_blocked BOOLEAN NOT NULL DEFAULT false,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT (now()),
+
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

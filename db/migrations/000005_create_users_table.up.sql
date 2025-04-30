@@ -1,0 +1,18 @@
+CREATE TABLE users (
+    id BIGINT UNSIGNED PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    fullname VARCHAR(100) NOT NULL, 
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    user_role_id BINARY(16), 
+    office_id BIGINT UNSIGNED DEFAULT NULL,
+    school_id BIGINT UNSIGNED DEFAULT NULL,
+    is_super_admin TINYINT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+
+    FOREIGN KEY (user_role_id) REFERENCES user_roles(id),
+    FOREIGN KEY (office_id) REFERENCES offices(id),
+    FOREIGN KEY (school_id) REFERENCES schools(id)
+);
