@@ -11,9 +11,9 @@ import (
 
 const locationDistrictByRegency = `-- name: LocationDistrictByRegency :many
 SELECT id, name, province_id, regency_id FROM loc_districts
-WHERE regency_id = ? 
-AND name LIKE ?
-LIMIT ? OFFSET ?
+WHERE regency_id = $1 
+AND name LIKE $2
+LIMIT $3 OFFSET $4
 `
 
 type LocationDistrictByRegencyParams struct {
@@ -23,7 +23,7 @@ type LocationDistrictByRegencyParams struct {
 	Offset    int32  `json:"offset"`
 }
 
-func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDistrictByRegencyParams) ([]LocDistrict, error) {
+func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDistrictByRegencyParams) ([]LocDistricts, error) {
 	rows, err := q.db.QueryContext(ctx, locationDistrictByRegency,
 		arg.RegencyID,
 		arg.Name,
@@ -34,9 +34,9 @@ func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDis
 		return nil, err
 	}
 	defer rows.Close()
-	items := []LocDistrict{}
+	var items []LocDistricts
 	for rows.Next() {
-		var i LocDistrict
+		var i LocDistricts
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -58,8 +58,8 @@ func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDis
 
 const locationProvince = `-- name: LocationProvince :many
 SELECT id, name FROM loc_provinces 
-WHERE name LIKE ?
-LIMIT ? OFFSET ?
+WHERE name LIKE $1
+LIMIT $2 OFFSET $3
 `
 
 type LocationProvinceParams struct {
@@ -68,15 +68,15 @@ type LocationProvinceParams struct {
 	Offset int32  `json:"offset"`
 }
 
-func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvinceParams) ([]LocProvince, error) {
+func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvinceParams) ([]LocProvinces, error) {
 	rows, err := q.db.QueryContext(ctx, locationProvince, arg.Name, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []LocProvince{}
+	var items []LocProvinces
 	for rows.Next() {
-		var i LocProvince
+		var i LocProvinces
 		if err := rows.Scan(&i.ID, &i.Name); err != nil {
 			return nil, err
 		}
@@ -93,9 +93,9 @@ func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvincePara
 
 const locationRegencyByProvince = `-- name: LocationRegencyByProvince :many
 SELECT id, name, province_id FROM loc_regencies 
-WHERE province_id = ? 
-AND name LIKE ?
-LIMIT ? OFFSET ?
+WHERE province_id = $1 
+AND name LIKE $2
+LIMIT $3 OFFSET $4
 `
 
 type LocationRegencyByProvinceParams struct {
@@ -105,7 +105,7 @@ type LocationRegencyByProvinceParams struct {
 	Offset     int32  `json:"offset"`
 }
 
-func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg LocationRegencyByProvinceParams) ([]LocRegency, error) {
+func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg LocationRegencyByProvinceParams) ([]LocRegencies, error) {
 	rows, err := q.db.QueryContext(ctx, locationRegencyByProvince,
 		arg.ProvinceID,
 		arg.Name,
@@ -116,9 +116,9 @@ func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg LocationReg
 		return nil, err
 	}
 	defer rows.Close()
-	items := []LocRegency{}
+	var items []LocRegencies
 	for rows.Next() {
-		var i LocRegency
+		var i LocRegencies
 		if err := rows.Scan(&i.ID, &i.Name, &i.ProvinceID); err != nil {
 			return nil, err
 		}

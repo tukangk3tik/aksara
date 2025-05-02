@@ -9,26 +9,26 @@ import (
 	"time"
 )
 
-type LocDistrict struct {
+type LocDistricts struct {
 	ID         int32  `json:"id"`
 	Name       string `json:"name"`
 	ProvinceID int32  `json:"province_id"`
 	RegencyID  int32  `json:"regency_id"`
 }
 
-type LocProvince struct {
+type LocProvinces struct {
 	ID   int32  `json:"id"`
 	Name string `json:"name"`
 }
 
-type LocRegency struct {
+type LocRegencies struct {
 	ID         int32  `json:"id"`
 	Name       string `json:"name"`
 	ProvinceID int32  `json:"province_id"`
 }
 
-type Office struct {
-	ID         uint64         `json:"id"`
+type Offices struct {
+	ID         int64          `json:"id"`
 	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	ProvinceID int32          `json:"province_id"`
@@ -38,17 +38,17 @@ type Office struct {
 	Phone      sql.NullString `json:"phone"`
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  uint64         `json:"created_by"`
+	CreatedBy  int64          `json:"created_by"`
 	CreatedAt  sql.NullTime   `json:"created_at"`
 	UpdatedAt  sql.NullTime   `json:"updated_at"`
 	DeletedAt  sql.NullTime   `json:"deleted_at"`
 }
 
-type School struct {
-	ID         uint64         `json:"id"`
+type Schools struct {
+	ID         int64          `json:"id"`
 	Code       string         `json:"code"`
 	Name       string         `json:"name"`
-	OfficeID   uint64         `json:"office_id"`
+	OfficeID   sql.NullInt64  `json:"office_id"`
 	ProvinceID int32          `json:"province_id"`
 	RegencyID  int32          `json:"regency_id"`
 	DistrictID int32          `json:"district_id"`
@@ -56,14 +56,14 @@ type School struct {
 	Phone      sql.NullString `json:"phone"`
 	Address    sql.NullString `json:"address"`
 	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  uint64         `json:"created_by"`
+	CreatedBy  int64          `json:"created_by"`
 	CreatedAt  sql.NullTime   `json:"created_at"`
 	UpdatedAt  sql.NullTime   `json:"updated_at"`
 	DeletedAt  sql.NullTime   `json:"deleted_at"`
 }
 
-type Session struct {
-	ID           uint64        `json:"id"`
+type Sessions struct {
+	ID           int64         `json:"id"`
 	UserID       sql.NullInt64 `json:"user_id"`
 	RefreshToken string        `json:"refresh_token"`
 	UserAgent    string        `json:"user_agent"`
@@ -73,25 +73,25 @@ type Session struct {
 	CreatedAt    time.Time     `json:"created_at"`
 }
 
-type User struct {
-	ID           uint64         `json:"id"`
-	Name         string         `json:"name"`
-	Fullname     string         `json:"fullname"`
-	Email        string         `json:"email"`
-	Password     string         `json:"password"`
-	UserRoleID   sql.NullString `json:"user_role_id"`
-	OfficeID     sql.NullInt64  `json:"office_id"`
-	SchoolID     sql.NullInt64  `json:"school_id"`
-	IsSuperAdmin sql.NullInt32  `json:"is_super_admin"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
-	DeletedAt    sql.NullTime   `json:"deleted_at"`
-}
-
-type UserRole struct {
+type UserRoles struct {
 	ID        int32        `json:"id"`
 	Name      string       `json:"name"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+
+type Users struct {
+	ID           int64         `json:"id"`
+	Name         string        `json:"name"`
+	Fullname     string        `json:"fullname"`
+	Email        string        `json:"email"`
+	Password     string        `json:"password"`
+	UserRoleID   int32         `json:"user_role_id"`
+	OfficeID     sql.NullInt64 `json:"office_id"`
+	SchoolID     sql.NullInt64 `json:"school_id"`
+	IsSuperAdmin sql.NullBool  `json:"is_super_admin"`
+	CreatedAt    sql.NullTime  `json:"created_at"`
+	UpdatedAt    sql.NullTime  `json:"updated_at"`
+	DeletedAt    sql.NullTime  `json:"deleted_at"`
 }
