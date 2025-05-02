@@ -7,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/bwmarrin/snowflake"
-	"github.com/go-sql-driver/mysql"
 )
 
 // TODO: need to set at env for NewNode value
