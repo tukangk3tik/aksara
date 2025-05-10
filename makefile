@@ -1,18 +1,18 @@
 
 migrate-up:
-	migrate -path db/migrations -database "postgres://postgres:aksara2025@localhost:5432/aksara?sslmode=disable" -verbose up
+	migrate -path db/migrations -database "$(DB_URL)" -verbose up
 
 migrate-up1:
-	migrate -path db/migrations -database "postgres://postgres:aksara2025@localhost:5432/aksara?sslmode=disable" -verbose up 1
+	migrate -path db/migrations -database "$(DB_URL)" -verbose up 1
 
 migrate-down:
-	migrate -path db/migrations -database "postgres://postgres:aksara2025@localhost:5432/aksara?sslmode=disable" -verbose down 
+	migrate -path db/migrations -database "$(DB_URL)" -verbose down 
 
 migrate-down1:
-	migrate -path db/migrations -database "postgres://postgres:aksara2025@localhost:5432/aksara?sslmode=disable" -verbose down 1
+	migrate -path db/migrations -database "$(DB_URL)" -verbose down 1
 
 migrate-seed:
-	migrate -path db/seed -database "postgres://postgres:aksara2025@localhost:5432/aksara?sslmode=disable" -verbose up 1
+	migrate -path db/seed -database "$(DB_URL)" -verbose up 1
 
 sqlc:
 	sqlc generate
