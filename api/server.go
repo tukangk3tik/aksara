@@ -35,17 +35,17 @@ func NewServer(config utils.Config, store db.Store) (*Server, error) {
 		}
 	*/
 
-	server.setupRouter(tokenMaker)
-	return server, nil
-}
-
-func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 	if server.config.AppEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
 
+	server.setupRouter(tokenMaker)
+	return server, nil
+}
+
+func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 	router := gin.Default()
 	router.Use(security.TraceMiddleware(), security.CorsMiddleware())
 

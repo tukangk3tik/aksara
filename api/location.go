@@ -28,7 +28,7 @@ func (server *Server) fetchProvinces(ctx *gin.Context) {
 
 	traceID := ctx.MustGet("trace_id").(string)
 
-	provinces, err := server.store.LocationProvince(ctx, arg)
+	provinces, err := server.store.LocationProvince(ctx, &arg)
 	if err != nil {
 		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get provinces", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -67,7 +67,7 @@ func (server *Server) fetchRegencyByProvince(ctx *gin.Context) {
 
 	traceID := ctx.MustGet("trace_id").(string)
 
-	regencies, err := server.store.LocationRegencyByProvince(ctx, arg)
+	regencies, err := server.store.LocationRegencyByProvince(ctx, &arg)
 	if err != nil {
 		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get provinces", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -106,7 +106,7 @@ func (server *Server) fetchDistrictByRegency(ctx *gin.Context) {
 
 	traceID := ctx.MustGet("trace_id").(string)
 
-	districts, err := server.store.LocationDistrictByRegency(ctx, arg)
+	districts, err := server.store.LocationDistrictByRegency(ctx, &arg)
 	if err != nil {
 		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get provinces", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -128,21 +128,21 @@ func (server *Server) fetchDistrictByRegency(ctx *gin.Context) {
 		}})
 }
 
-func parseProviceModelToResponse(model db.LocProvince) response.ProvinceResponse {
+func parseProviceModelToResponse(model db.LocProvinces) response.ProvinceResponse {
 	return response.ProvinceResponse{
 		ID:   model.ID,
 		Name: model.Name,
 	}
 }
 
-func parseRegencyModelToResponse(model db.LocRegency) response.RegencyResponse {
+func parseRegencyModelToResponse(model db.LocRegencies) response.RegencyResponse {
 	return response.RegencyResponse{
 		ID:   model.ID,
 		Name: model.Name,
 	}
 }
 
-func parseDistrictModelToResponse(model db.LocDistrict) response.DistrictResponse {
+func parseDistrictModelToResponse(model db.LocDistricts) response.DistrictResponse {
 	return response.DistrictResponse{
 		ID:   model.ID,
 		Name: model.Name,

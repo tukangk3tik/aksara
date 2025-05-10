@@ -29,7 +29,7 @@ func (server *Server) getOffices(ctx *gin.Context) {
 		Offset: offset, 
 	}
 
-	offices, err := server.store.ListAllOffices(ctx, arg)
+	offices, err := server.store.ListAllOffices(ctx, &arg)
 	if err != nil {
 		log.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -76,33 +76,29 @@ func (server *Server) createOffice(ctx *gin.Context) {
 	userID := ctx.MustGet("user_id").(uint64)
 	traceID := ctx.MustGet("trace_id").(string)
 
-	officeID := utils.GenerateSnowflakeID()
 	createParams := db.CreateOfficeParams{
-		ID:         officeID,
 		Code:       req.Code,
 		Name:       req.Name,
 		ProvinceID: req.ProvinceID,
 		RegencyID:  req.RegencyID,
 		DistrictID: req.DistrictID,
 		Email:      req.Email,
-		CreatedBy:  userID,
+		CreatedBy:  int64(userID),
 	}
 
-	_, err := server.store.CreateOffice(ctx, createParams)
+	newOffice, err := server.store.CreateOffice(ctx, &createParams)
 	if err != nil {
-		errorColumn := utils.GetColumnNameFromError(err)
-
-		if errorColumn == "" {
-			log.Error(err.Error())
-			ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
-		} else {
+		if db.ErrorCode(err) == db.UniqueViolation {
 			log.Warn(err.Error())
-			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], []string{errorColumn}))
+			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], nil))
+			return
 		}
+
+		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": officeID}})
+	ctx.JSON(http.StatusCreated, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": newOffice.ID}})
 }
 
 func (server *Server) updateOffice(ctx *gin.Context) {
@@ -124,14 +120,14 @@ func (server *Server) updateOffice(ctx *gin.Context) {
 		return
 	}
 
-	findOffice, err := server.store.GetOffice(ctx, params.ID)
+	findOffice, err := server.store.GetSchoolById(ctx, int64(params.ID))
 	if err != nil {
 		log.Warn(err.Error())
 		ctx.JSON(http.StatusNotFound, response.BuildTrxErrorResponse(traceID, "NOT_FOUND", utils.ErrorCodeMap["NOT_FOUND"], nil))
 		return
 	}
 
-	updateParams := db.UpdateOfficeParams{
+	updateParams := db.UpdateSchoolParams{
 		Name:       req.Name,
 		ProvinceID: findOffice.ProvinceID,
 		RegencyID:  findOffice.RegencyID,
@@ -140,7 +136,7 @@ func (server *Server) updateOffice(ctx *gin.Context) {
 		Phone:      findOffice.Phone,
 		Address:    findOffice.Address,
 		LogoUrl:    findOffice.LogoUrl,
-		ID:         params.ID,
+		ID:         int64(params.ID),
 	}
 
 	if req.Phone != "" {
@@ -164,17 +160,15 @@ func (server *Server) updateOffice(ctx *gin.Context) {
 		}
 	}
 
-	_, err = server.store.UpdateOffice(ctx, updateParams)
+	_, err = server.store.UpdateSchool(ctx, &updateParams)
 	if err != nil {
-		errorColumn := utils.GetColumnNameFromError(err)
-
-		if errorColumn == "" {
-			log.Error(err.Error())
-			ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
-		} else {
+		if db.ErrorCode(err) == db.UniqueViolation {
 			log.Warn(err.Error())
-			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], []string{errorColumn}))
+			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], nil))
+			return
 		}
+
+		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
@@ -194,7 +188,7 @@ func (server *Server) deleteOffice(ctx *gin.Context) {
 
 	traceID := ctx.MustGet("trace_id").(string)
 
-	res, err := server.store.DeleteOffice(ctx, params.ID)
+	res, err := server.store.DeleteSchool(ctx, int64(params.ID))
 	if err != nil {
 		log.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -219,7 +213,7 @@ func (server *Server) deleteOffice(ctx *gin.Context) {
 
 func parseOfficeModelToResponse(model db.ListAllOfficesRow) response.OfficeResponse {
 	return response.OfficeResponse{
-		ID:        model.ID,
+		ID:        int64(model.ID),
 		Code:      model.Code,
 		Name:      model.Name,
 		Province:  model.Province,
