@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"regexp"
+	//"regexp"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -21,6 +21,7 @@ func GenerateSnowflakeID() uint64 {
 	return uint64(id)
 }
 
+/*
 // Get MySQL error column name
 func GetColumnNameFromError(err error) string {
 	if mysqlErr, ok := err.(*mysql.MySQLError); ok {
@@ -41,6 +42,7 @@ func GetColumnNameFromError(err error) string {
 	}
 	return ""
 }
+	*/
 
 func CheckRow(err error) {
     if errors.Is(err, sql.ErrNoRows) {
