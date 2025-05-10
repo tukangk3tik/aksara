@@ -33,7 +33,7 @@ type CreateUserParams struct {
 	SchoolID   sql.NullInt64 `json:"school_id"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) (Users, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Name,
 		arg.Fullname,
@@ -74,27 +74,28 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) (sql.Result, error) 
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, email, password FROM users
+SELECT id, name, fullname, email, password, user_role_id, office_id, school_id, is_super_admin, created_at, updated_at, deleted_at FROM users
 WHERE email = $1 
 AND deleted_at IS NULL
 LIMIT 1
 `
 
-type GetUserByEmailRow struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
-	var i GetUserByEmailRow
+	var i Users
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Fullname,
 		&i.Email,
 		&i.Password,
+		&i.UserRoleID,
+		&i.OfficeID,
+		&i.SchoolID,
+		&i.IsSuperAdmin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -138,7 +139,7 @@ type ListAllUsersParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListAllUsers(ctx context.Context, arg ListAllUsersParams) ([]Users, error) {
+func (q *Queries) ListAllUsers(ctx context.Context, arg *ListAllUsersParams) ([]Users, error) {
 	rows, err := q.db.QueryContext(ctx, listAllUsers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -212,7 +213,7 @@ type UpdateUserParams struct {
 	ID         int64         `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error) {
+func (q *Queries) UpdateUser(ctx context.Context, arg *UpdateUserParams) (Users, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.Name,
 		arg.Fullname,

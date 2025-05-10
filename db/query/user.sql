@@ -35,7 +35,7 @@ SELECT COUNT(*) as total_items FROM users
 WHERE deleted_at IS NULL;
 
 -- name: GetUserByEmail :one
-SELECT id, name, email, password FROM users
+SELECT * FROM users
 WHERE email = $1 
 AND deleted_at IS NULL
 LIMIT 1;
