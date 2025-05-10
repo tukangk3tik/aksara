@@ -46,5 +46,8 @@ jobs:
     - name: Run migrations
       run: make migrate-up DB_URL="postgresql://postgres:aksara2025@localhost:5432/aksara?sslmode=disable"
 
+    - name: Import location assets
+      run: make import-loc-assets DB_URL="postgresql://postgres:aksara2025@localhost:5432/aksara?sslmode=disable"
+
     - name: Test
       run: make test
