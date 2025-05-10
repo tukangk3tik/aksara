@@ -1,7 +1,7 @@
 package response
 
 type OfficeResponse struct {
-	ID        uint64 `json:"id"`
+	ID        int64 `json:"id"`
 	Index     string `json:"index"`
 	Code      string `json:"code"`
 	Name      string `json:"name"`
@@ -12,7 +12,7 @@ type OfficeResponse struct {
 	Phone     string `json:"phone"`
 	Address   string `json:"address"`
 	LogoURL   string `json:"logo_url"`
-	CreatedBy uint64 `json:"created_by"`
+	CreatedBy int64 `json:"created_by"`
 }
 
 type OfficeListResponse struct {

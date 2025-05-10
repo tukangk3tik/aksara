@@ -42,7 +42,6 @@ func (server *Server) loginUser(ctx *gin.Context) {
 			return
 		}
 		log.Error("handling /login", zap.Error(err))
-		// server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get user", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
@@ -50,23 +49,20 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	err = utils.CheckPassword(req.Password, user.Password)
 	if err != nil {
 		log.Error("handling /login", zap.Error(err))
-		// server.logger.Error(utils.LogErrorMessageBuilder("trx failed to check password", traceID), zap.Error(err))
 		ctx.JSON(http.StatusUnauthorized, response.BuildErrorResponse("WRONG_PASSWORD", utils.ErrorCodeMap["WRONG_PASSWORD"], nil))
 		return
 	}
 
-	accessToken, _, err := server.tokenMaker.GenerateToken(user.ID, server.config.AccessTokenDuration)
+	accessToken, _, err := server.tokenMaker.GenerateToken(uint64(user.ID), server.config.AccessTokenDuration)
 	if err != nil {
 		log.Error("handling /login", zap.Error(err))
-		// server.logger.Error(utils.LogErrorMessageBuilder("trx failed to generate access token", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
-	refreshToken, _, err := server.tokenMaker.GenerateToken(user.ID, server.config.RefreshTokenDuration)
+	refreshToken, _, err := server.tokenMaker.GenerateToken(uint64(user.ID), server.config.RefreshTokenDuration)
 	if err != nil {
 		log.Error("handling /login", zap.Error(err))
-		// server.logger.Error(utils.LogErrorMessageBuilder("trx failed to generate refresh token", traceID), zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}

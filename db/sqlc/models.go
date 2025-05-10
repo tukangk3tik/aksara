@@ -10,10 +10,10 @@ import (
 )
 
 type LocDistricts struct {
-	ID         int32  `json:"id"`
-	Name       string `json:"name"`
-	ProvinceID int32  `json:"province_id"`
-	RegencyID  int32  `json:"regency_id"`
+	ID         int32         `json:"id"`
+	Name       string        `json:"name"`
+	ProvinceID sql.NullInt32 `json:"province_id"`
+	RegencyID  int32         `json:"regency_id"`
 }
 
 type LocProvinces struct {

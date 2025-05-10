@@ -19,7 +19,7 @@ func createRandomUser(t *testing.T) Users {
 		SchoolID:   sql.NullInt64{},
 	}
 
-	user, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := testQueries.CreateUser(context.Background(), &arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -69,7 +69,7 @@ func TestUpdateUser(t *testing.T) {
 
 	user.Name = "test update name"
 	user.Fullname = "test update fullname"
-	_, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	_, err := testQueries.UpdateUser(context.Background(), &UpdateUserParams{
 		Name:       user.Name,
 		Fullname:   user.Fullname,
 		Email:      user.Email,
@@ -105,6 +105,21 @@ func TestDeleteUser(t *testing.T) {
 	testQueries.ClearUserRoles(context.Background())
 }
 
+func TestTotalListAllUsers(t *testing.T) {
+	SeedUserRoles(testQueries, context.Background())
+
+	for range 10 {
+		createRandomUser(t)
+	}
+
+	total, err := testQueries.TotalListAllUsers(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, total, int64(10))
+
+	testQueries.ClearUsers(context.Background())
+	testQueries.ClearUserRoles(context.Background())
+}
+
 func TestListAllUsers(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
@@ -112,7 +127,7 @@ func TestListAllUsers(t *testing.T) {
 		createRandomUser(t)
 	}
 
-	users, err := testQueries.ListAllUsers(context.Background(), ListAllUsersParams{
+	users, err := testQueries.ListAllUsers(context.Background(), &ListAllUsersParams{
 		Limit:  10,
 		Offset: 0,
 	})

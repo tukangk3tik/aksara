@@ -44,7 +44,7 @@ type CreateSchoolParams struct {
 	CreatedBy  int64          `json:"created_by"`
 }
 
-func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Schools, error) {
+func (q *Queries) CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Schools, error) {
 	row := q.db.QueryRowContext(ctx, createSchool,
 		arg.ID,
 		arg.Code,
@@ -92,15 +92,15 @@ func (q *Queries) DeleteSchool(ctx context.Context, id int64) (sql.Result, error
 	return q.db.ExecContext(ctx, deleteSchool, id)
 }
 
-const getSchool = `-- name: GetSchool :one
+const getSchoolById = `-- name: GetSchoolById :one
 SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools 
 WHERE id = $1 
 AND deleted_at IS NULL 
 LIMIT 1
 `
 
-func (q *Queries) GetSchool(ctx context.Context, id int64) (Schools, error) {
-	row := q.db.QueryRowContext(ctx, getSchool, id)
+func (q *Queries) GetSchoolById(ctx context.Context, id int64) (Schools, error) {
+	row := q.db.QueryRowContext(ctx, getSchoolById, id)
 	var i Schools
 	err := row.Scan(
 		&i.ID,
@@ -134,7 +134,7 @@ type ListAllSchoolsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListAllSchools(ctx context.Context, arg ListAllSchoolsParams) ([]Schools, error) {
+func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]Schools, error) {
 	rows, err := q.db.QueryContext(ctx, listAllSchools, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -187,7 +187,7 @@ type ListSchoolsByDistrictParams struct {
 	Offset     int32 `json:"offset"`
 }
 
-func (q *Queries) ListSchoolsByDistrict(ctx context.Context, arg ListSchoolsByDistrictParams) ([]Schools, error) {
+func (q *Queries) ListSchoolsByDistrict(ctx context.Context, arg *ListSchoolsByDistrictParams) ([]Schools, error) {
 	rows, err := q.db.QueryContext(ctx, listSchoolsByDistrict, arg.DistrictID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -240,7 +240,7 @@ type ListSchoolsByOfficeParams struct {
 	Offset   int32         `json:"offset"`
 }
 
-func (q *Queries) ListSchoolsByOffice(ctx context.Context, arg ListSchoolsByOfficeParams) ([]Schools, error) {
+func (q *Queries) ListSchoolsByOffice(ctx context.Context, arg *ListSchoolsByOfficeParams) ([]Schools, error) {
 	rows, err := q.db.QueryContext(ctx, listSchoolsByOffice, arg.OfficeID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -293,7 +293,7 @@ type ListSchoolsByProvinceParams struct {
 	Offset     int32 `json:"offset"`
 }
 
-func (q *Queries) ListSchoolsByProvince(ctx context.Context, arg ListSchoolsByProvinceParams) ([]Schools, error) {
+func (q *Queries) ListSchoolsByProvince(ctx context.Context, arg *ListSchoolsByProvinceParams) ([]Schools, error) {
 	rows, err := q.db.QueryContext(ctx, listSchoolsByProvince, arg.ProvinceID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -346,7 +346,7 @@ type ListSchoolsByRegencyParams struct {
 	Offset    int32 `json:"offset"`
 }
 
-func (q *Queries) ListSchoolsByRegency(ctx context.Context, arg ListSchoolsByRegencyParams) ([]Schools, error) {
+func (q *Queries) ListSchoolsByRegency(ctx context.Context, arg *ListSchoolsByRegencyParams) ([]Schools, error) {
 	rows, err := q.db.QueryContext(ctx, listSchoolsByRegency, arg.RegencyID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -417,7 +417,7 @@ type UpdateSchoolParams struct {
 	ID         int64          `json:"id"`
 }
 
-func (q *Queries) UpdateSchool(ctx context.Context, arg UpdateSchoolParams) (Schools, error) {
+func (q *Queries) UpdateSchool(ctx context.Context, arg *UpdateSchoolParams) (Schools, error) {
 	row := q.db.QueryRowContext(ctx, updateSchool,
 		arg.Code,
 		arg.Name,

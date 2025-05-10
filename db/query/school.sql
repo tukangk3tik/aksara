@@ -16,7 +16,7 @@ INSERT INTO schools (
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING *;
 
--- name: GetSchool :one
+-- name: GetSchoolById :one
 SELECT * FROM schools 
 WHERE id = $1 
 AND deleted_at IS NULL 

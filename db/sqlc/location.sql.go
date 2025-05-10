@@ -12,7 +12,7 @@ import (
 const locationDistrictByRegency = `-- name: LocationDistrictByRegency :many
 SELECT id, name, province_id, regency_id FROM loc_districts
 WHERE regency_id = $1 
-AND name LIKE $2
+AND name ILIKE $2
 LIMIT $3 OFFSET $4
 `
 
@@ -23,7 +23,7 @@ type LocationDistrictByRegencyParams struct {
 	Offset    int32  `json:"offset"`
 }
 
-func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDistrictByRegencyParams) ([]LocDistricts, error) {
+func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg *LocationDistrictByRegencyParams) ([]LocDistricts, error) {
 	rows, err := q.db.QueryContext(ctx, locationDistrictByRegency,
 		arg.RegencyID,
 		arg.Name,
@@ -58,7 +58,7 @@ func (q *Queries) LocationDistrictByRegency(ctx context.Context, arg LocationDis
 
 const locationProvince = `-- name: LocationProvince :many
 SELECT id, name FROM loc_provinces 
-WHERE name LIKE $1
+WHERE name ILIKE $1
 LIMIT $2 OFFSET $3
 `
 
@@ -68,7 +68,7 @@ type LocationProvinceParams struct {
 	Offset int32  `json:"offset"`
 }
 
-func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvinceParams) ([]LocProvinces, error) {
+func (q *Queries) LocationProvince(ctx context.Context, arg *LocationProvinceParams) ([]LocProvinces, error) {
 	rows, err := q.db.QueryContext(ctx, locationProvince, arg.Name, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (q *Queries) LocationProvince(ctx context.Context, arg LocationProvincePara
 const locationRegencyByProvince = `-- name: LocationRegencyByProvince :many
 SELECT id, name, province_id FROM loc_regencies 
 WHERE province_id = $1 
-AND name LIKE $2
+AND name ILIKE $2
 LIMIT $3 OFFSET $4
 `
 
@@ -105,7 +105,7 @@ type LocationRegencyByProvinceParams struct {
 	Offset     int32  `json:"offset"`
 }
 
-func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg LocationRegencyByProvinceParams) ([]LocRegencies, error) {
+func (q *Queries) LocationRegencyByProvince(ctx context.Context, arg *LocationRegencyByProvinceParams) ([]LocRegencies, error) {
 	rows, err := q.db.QueryContext(ctx, locationRegencyByProvince,
 		arg.ProvinceID,
 		arg.Name,

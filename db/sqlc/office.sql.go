@@ -12,7 +12,6 @@ import (
 
 const createOffice = `-- name: CreateOffice :one
 INSERT INTO offices (
-  id,
   code,
   name,
   province_id,
@@ -24,12 +23,11 @@ INSERT INTO offices (
   logo_url,
   created_by
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 type CreateOfficeParams struct {
-	ID         int64          `json:"id"`
 	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	ProvinceID int32          `json:"province_id"`
@@ -42,9 +40,8 @@ type CreateOfficeParams struct {
 	CreatedBy  int64          `json:"created_by"`
 }
 
-func (q *Queries) CreateOffice(ctx context.Context, arg CreateOfficeParams) (Offices, error) {
+func (q *Queries) CreateOffice(ctx context.Context, arg *CreateOfficeParams) (Offices, error) {
 	row := q.db.QueryRowContext(ctx, createOffice,
-		arg.ID,
 		arg.Code,
 		arg.Name,
 		arg.ProvinceID,
@@ -88,14 +85,14 @@ func (q *Queries) DeleteOffice(ctx context.Context, id int64) (sql.Result, error
 	return q.db.ExecContext(ctx, deleteOffice, id)
 }
 
-const getOffice = `-- name: GetOffice :one
+const getOfficeById = `-- name: GetOfficeById :one
 SELECT  a.id, a.code, a.name, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by FROM offices a
 WHERE a.id = $1 
 AND a.deleted_at IS NULL 
 LIMIT 1
 `
 
-type GetOfficeRow struct {
+type GetOfficeByIdRow struct {
 	ID         int64          `json:"id"`
 	Code       string         `json:"code"`
 	Name       string         `json:"name"`
@@ -109,9 +106,9 @@ type GetOfficeRow struct {
 	CreatedBy  int64          `json:"created_by"`
 }
 
-func (q *Queries) GetOffice(ctx context.Context, id int64) (GetOfficeRow, error) {
-	row := q.db.QueryRowContext(ctx, getOffice, id)
-	var i GetOfficeRow
+func (q *Queries) GetOfficeById(ctx context.Context, id int64) (GetOfficeByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getOfficeById, id)
+	var i GetOfficeByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.Code,
@@ -160,7 +157,7 @@ type ListAllOfficesRow struct {
 	District   sql.NullString `json:"district"`
 }
 
-func (q *Queries) ListAllOffices(ctx context.Context, arg ListAllOfficesParams) ([]ListAllOfficesRow, error) {
+func (q *Queries) ListAllOffices(ctx context.Context, arg *ListAllOfficesParams) ([]ListAllOfficesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listAllOffices, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -198,29 +195,67 @@ func (q *Queries) ListAllOffices(ctx context.Context, arg ListAllOfficesParams) 
 	return items, nil
 }
 
-const listOfficesByDistrict = `-- name: ListOfficesByDistrict :many
-SELECT id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM offices
-WHERE deleted_at IS NULL
-AND district_id = $1 
-ORDER BY id
-LIMIT $2 OFFSET $3
+const listOfficesWithFilters = `-- name: ListOfficesWithFilters :many
+SELECT a.id, a.code, a.name, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as province, c.name as regency, d.name as district 
+FROM offices a
+JOIN loc_provinces b ON a.province_id = b.id
+JOIN loc_regencies c ON a.regency_id = c.id
+LEFT JOIN loc_districts d ON a.district_id = d.id
+WHERE a.deleted_at IS NULL 
+AND ($3::int IS NULL OR a.province_id = $3)
+AND ($4::int IS NULL OR a.regency_id = $4)
+AND ($5::int IS NULL OR a.district_id = $5)
+AND ($6::text IS NULL OR a.name ILIKE '%' || $6 || '%')
+ORDER BY a.id
+LIMIT $1 OFFSET $2
 `
 
-type ListOfficesByDistrictParams struct {
-	DistrictID int32 `json:"district_id"`
-	Limit      int32 `json:"limit"`
-	Offset     int32 `json:"offset"`
+type ListOfficesWithFiltersParams struct {
+	Limit      int32          `json:"limit"`
+	Offset     int32          `json:"offset"`
+	ProvinceID sql.NullInt32  `json:"province_id"`
+	RegencyID  sql.NullInt32  `json:"regency_id"`
+	DistrictID sql.NullInt32  `json:"district_id"`
+	Name       sql.NullString `json:"name"`
 }
 
-func (q *Queries) ListOfficesByDistrict(ctx context.Context, arg ListOfficesByDistrictParams) ([]Offices, error) {
-	rows, err := q.db.QueryContext(ctx, listOfficesByDistrict, arg.DistrictID, arg.Limit, arg.Offset)
+type ListOfficesWithFiltersRow struct {
+	ID         int64          `json:"id"`
+	Code       string         `json:"code"`
+	Name       string         `json:"name"`
+	ProvinceID int32          `json:"province_id"`
+	RegencyID  int32          `json:"regency_id"`
+	DistrictID int32          `json:"district_id"`
+	Email      string         `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Address    sql.NullString `json:"address"`
+	LogoUrl    sql.NullString `json:"logo_url"`
+	CreatedBy  int64          `json:"created_by"`
+	Province   string         `json:"province"`
+	Regency    string         `json:"regency"`
+	District   sql.NullString `json:"district"`
+}
+
+// Optional province filter
+// Optional regency filter
+// Optional district filter
+// Optional name search
+func (q *Queries) ListOfficesWithFilters(ctx context.Context, arg *ListOfficesWithFiltersParams) ([]ListOfficesWithFiltersRow, error) {
+	rows, err := q.db.QueryContext(ctx, listOfficesWithFilters,
+		arg.Limit,
+		arg.Offset,
+		arg.ProvinceID,
+		arg.RegencyID,
+		arg.DistrictID,
+		arg.Name,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Offices
+	var items []ListOfficesWithFiltersRow
 	for rows.Next() {
-		var i Offices
+		var i ListOfficesWithFiltersRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Code,
@@ -233,113 +268,9 @@ func (q *Queries) ListOfficesByDistrict(ctx context.Context, arg ListOfficesByDi
 			&i.Address,
 			&i.LogoUrl,
 			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listOfficesByProvince = `-- name: ListOfficesByProvince :many
-SELECT id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM offices
-WHERE deleted_at IS NULL
-AND province_id = $1 
-ORDER BY id
-LIMIT $2 OFFSET $3
-`
-
-type ListOfficesByProvinceParams struct {
-	ProvinceID int32 `json:"province_id"`
-	Limit      int32 `json:"limit"`
-	Offset     int32 `json:"offset"`
-}
-
-func (q *Queries) ListOfficesByProvince(ctx context.Context, arg ListOfficesByProvinceParams) ([]Offices, error) {
-	rows, err := q.db.QueryContext(ctx, listOfficesByProvince, arg.ProvinceID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Offices
-	for rows.Next() {
-		var i Offices
-		if err := rows.Scan(
-			&i.ID,
-			&i.Code,
-			&i.Name,
-			&i.ProvinceID,
-			&i.RegencyID,
-			&i.DistrictID,
-			&i.Email,
-			&i.Phone,
-			&i.Address,
-			&i.LogoUrl,
-			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listOfficesByRegency = `-- name: ListOfficesByRegency :many
-SELECT id, code, name, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM offices
-WHERE deleted_at IS NULL
-AND regency_id = $1 
-ORDER BY id
-LIMIT $2 OFFSET $3
-`
-
-type ListOfficesByRegencyParams struct {
-	RegencyID int32 `json:"regency_id"`
-	Limit     int32 `json:"limit"`
-	Offset    int32 `json:"offset"`
-}
-
-func (q *Queries) ListOfficesByRegency(ctx context.Context, arg ListOfficesByRegencyParams) ([]Offices, error) {
-	rows, err := q.db.QueryContext(ctx, listOfficesByRegency, arg.RegencyID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Offices
-	for rows.Next() {
-		var i Offices
-		if err := rows.Scan(
-			&i.ID,
-			&i.Code,
-			&i.Name,
-			&i.ProvinceID,
-			&i.RegencyID,
-			&i.DistrictID,
-			&i.Email,
-			&i.Phone,
-			&i.Address,
-			&i.LogoUrl,
-			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
+			&i.Province,
+			&i.Regency,
+			&i.District,
 		); err != nil {
 			return nil, err
 		}
@@ -361,6 +292,39 @@ WHERE deleted_at IS NULL
 
 func (q *Queries) TotalListAllOffices(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, totalListAllOffices)
+	var total_items int64
+	err := row.Scan(&total_items)
+	return total_items, err
+}
+
+const totalListOfficesWithFilters = `-- name: TotalListOfficesWithFilters :one
+SELECT COUNT(*) as total_items 
+FROM offices a
+WHERE a.deleted_at IS NULL 
+AND ($1::int IS NULL OR a.province_id = $1)
+AND ($2::int IS NULL OR a.regency_id = $2)
+AND ($3::int IS NULL OR a.district_id = $3)
+AND ($4::text IS NULL OR a.name ILIKE '%' || $4 || '%')
+`
+
+type TotalListOfficesWithFiltersParams struct {
+	ProvinceID sql.NullInt32  `json:"province_id"`
+	RegencyID  sql.NullInt32  `json:"regency_id"`
+	DistrictID sql.NullInt32  `json:"district_id"`
+	Name       sql.NullString `json:"name"`
+}
+
+// Optional province filter
+// Optional regency filter
+// Optional district filter
+// Optional name search
+func (q *Queries) TotalListOfficesWithFilters(ctx context.Context, arg *TotalListOfficesWithFiltersParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalListOfficesWithFilters,
+		arg.ProvinceID,
+		arg.RegencyID,
+		arg.DistrictID,
+		arg.Name,
+	)
 	var total_items int64
 	err := row.Scan(&total_items)
 	return total_items, err
@@ -396,7 +360,7 @@ type UpdateOfficeParams struct {
 	ID         int64          `json:"id"`
 }
 
-func (q *Queries) UpdateOffice(ctx context.Context, arg UpdateOfficeParams) (Offices, error) {
+func (q *Queries) UpdateOffice(ctx context.Context, arg *UpdateOfficeParams) (Offices, error) {
 	row := q.db.QueryRowContext(ctx, updateOffice,
 		arg.Code,
 		arg.Name,

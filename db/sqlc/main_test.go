@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver = "postgres"
-	dbSource = "postgresql://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable"
+	dbSource = "postgresql://postgres:aksara2025@localhost:5432/aksara?sslmode=disable"
 )
 
 var testQueries *Queries
