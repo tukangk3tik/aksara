@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:14-alpine
         env:
-          POSTGRES_USER: root 
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: aksara2025
-          POSTGRES_DB: aksara_test
+          POSTGRES_DB: aksara
         ports:
           - 5432:5432
         options: >-
@@ -44,7 +44,7 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: make migrate-up
+      run: make migrate-up DB_URL="postgresql://postgres:aksara2025@localhost:5432/aksara?sslmode=disable"
 
     - name: Test
       run: make test
