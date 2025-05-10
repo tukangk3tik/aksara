@@ -4,3 +4,5 @@ makefile
 
 logs/*
 !logs/.gitkeep
+
+**/.DS_Store
