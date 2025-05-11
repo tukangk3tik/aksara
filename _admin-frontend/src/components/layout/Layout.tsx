@@ -4,9 +4,16 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
 import { useSidebar } from '../../contexts/SiderbarContextProps';
+import LoadingScreen from '../LoadingScreen';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Layout: React.FC = () => {
   const { isOpen } = useSidebar();
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
