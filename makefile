@@ -46,6 +46,9 @@ import-loc-assets:
 	
 	@echo "All location assets imported successfully!"
 
+seed-data:
+	go run scripts/seeder.go
+
 sqlc:
 	sqlc generate
 

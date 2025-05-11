@@ -100,7 +100,7 @@ func TestLoginUserAPI(t *testing.T) {
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			req, err := http.NewRequest(http.MethodPost, "/users/login", bytes.NewReader(data))
+			req, err := http.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(data))
 			require.NoError(t, err)
 
 			server.router.ServeHTTP(recorder, req)

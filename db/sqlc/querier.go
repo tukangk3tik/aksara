@@ -17,7 +17,7 @@ type Querier interface {
 	CreateOffice(ctx context.Context, arg *CreateOfficeParams) (Offices, error)
 	CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Schools, error)
 	CreateUser(ctx context.Context, arg *CreateUserParams) (Users, error)
-	CreateUserRole(ctx context.Context, name string) (UserRoles, error)
+	CreateUserRole(ctx context.Context, arg *CreateUserRoleParams) (UserRoles, error)
 	DeleteOffice(ctx context.Context, id int64) (sql.Result, error)
 	DeleteSchool(ctx context.Context, id int64) (sql.Result, error)
 	DeleteUser(ctx context.Context, id int64) (sql.Result, error)

@@ -144,18 +144,18 @@ func (mr *MockStoreMockRecorder) CreateUser(ctx, arg any) *gomock.Call {
 }
 
 // CreateUserRole mocks base method.
-func (m *MockStore) CreateUserRole(ctx context.Context, name string) (db.UserRoles, error) {
+func (m *MockStore) CreateUserRole(ctx context.Context, arg *db.CreateUserRoleParams) (db.UserRoles, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUserRole", ctx, name)
+	ret := m.ctrl.Call(m, "CreateUserRole", ctx, arg)
 	ret0, _ := ret[0].(db.UserRoles)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateUserRole indicates an expected call of CreateUserRole.
-func (mr *MockStoreMockRecorder) CreateUserRole(ctx, name any) *gomock.Call {
+func (mr *MockStoreMockRecorder) CreateUserRole(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserRole", reflect.TypeOf((*MockStore)(nil).CreateUserRole), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserRole", reflect.TypeOf((*MockStore)(nil).CreateUserRole), ctx, arg)
 }
 
 // DeleteOffice mocks base method.
