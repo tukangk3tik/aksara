@@ -13,6 +13,11 @@ export const navigationItems: NavItem[] = [
     icon: 'DatabaseIcon',
     children: [
       {
+        id: 'offices',
+        title: 'Office',
+        path: '/master/office',
+      },
+      {
         id: 'school',
         title: 'School',
         path: '/master/school',

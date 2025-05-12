@@ -1,9 +1,38 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSidebar } from '../../contexts/SiderbarContextProps';
-import { MenuIcon, BellIcon, SearchIcon } from '@heroicons/react/outline';
+import { useAuth } from '../../contexts/AuthContext';
+import { MenuIcon, BellIcon, SearchIcon, LogoutIcon } from '@heroicons/react/outline';
 
 const Header: React.FC = () => {
   const { toggleSidebar } = useSidebar();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 md:px-6">
@@ -37,12 +66,29 @@ const Header: React.FC = () => {
         
         <div className="border-l border-gray-200 h-6 mx-2"></div>
         
-        <div className="flex items-center">
-          <img
-            src="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-            alt="User"
-            className="h-8 w-8 rounded-full"
-          />
+        <div className="relative" ref={dropdownRef}>
+          <button 
+            onClick={toggleDropdown}
+            className="flex items-center focus:outline-none"
+          >
+            <img
+              src="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+              alt="User"
+              className="h-8 w-8 rounded-full"
+            />
+          </button>
+          
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+              <button
+                onClick={handleLogout}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <LogoutIcon className="h-4 w-4 mr-2" />
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

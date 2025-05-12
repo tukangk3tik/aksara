@@ -3,16 +3,17 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) Users {
+func createRandomUser(t *testing.T, i int) Users {
 	arg := CreateUserParams{
-		Name:       "test",
-		Fullname:   "test",
-		Email:      "test",
+		Name:       fmt.Sprintf("test-%d", i),
+		Fullname:   fmt.Sprintf("test-%d", i),
+		Email:      fmt.Sprintf("test-%d@mail.com", i),
 		Password:   "test",
 		UserRoleID: 1,
 		OfficeID:   sql.NullInt64{},
@@ -37,7 +38,7 @@ func createRandomUser(t *testing.T) Users {
 func TestCreateUser(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	createRandomUser(t)
+	createRandomUser(t, 1)
 
 	testQueries.ClearUsers(context.Background())
 	testQueries.ClearUserRoles(context.Background())
@@ -46,7 +47,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserById(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	user := createRandomUser(t)
+	user := createRandomUser(t, 1)
 	
 	checkUser, err := testQueries.GetUserById(context.Background(), user.ID)
 	require.NoError(t, err)
@@ -65,7 +66,7 @@ func TestGetUserById(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	user := createRandomUser(t)
+	user := createRandomUser(t, 2)
 
 	user.Name = "test update name"
 	user.Fullname = "test update fullname"
@@ -93,7 +94,7 @@ func TestUpdateUser(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	user := createRandomUser(t)
+	user := createRandomUser(t, 3)
 	
 	testQueries.DeleteUser(context.Background(), user.ID)
 	
@@ -108,8 +109,8 @@ func TestDeleteUser(t *testing.T) {
 func TestTotalListAllUsers(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	for range 10 {
-		createRandomUser(t)
+	for i := range 10 {
+		createRandomUser(t, i)
 	}
 
 	total, err := testQueries.TotalListAllUsers(context.Background())
@@ -123,8 +124,8 @@ func TestTotalListAllUsers(t *testing.T) {
 func TestListAllUsers(t *testing.T) {
 	SeedUserRoles(testQueries, context.Background())
 
-	for range 10 {
-		createRandomUser(t)
+	for i := range 10 {
+		createRandomUser(t, i)
 	}
 
 	users, err := testQueries.ListAllUsers(context.Background(), &ListAllUsersParams{

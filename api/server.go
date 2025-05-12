@@ -59,7 +59,7 @@ func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 		c.JSON(http.StatusNotFound, response.BuildErrorResponse("NOT_FOUND", utils.ErrorCodeMap["NOT_FOUND"], nil))
 	})
 
-	router.POST("/users/login", server.loginUser)
+	router.POST("/auth/login", server.loginUser)
 
 	// location router
 	locGroup := router.Group("/loc")

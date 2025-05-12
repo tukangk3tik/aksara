@@ -9,7 +9,10 @@ import (
 )
 
 func TestCreateUserRole(t *testing.T) {
-	role, err := testQueries.CreateUserRole(context.Background(), "Admin")
+	role, err := testQueries.CreateUserRole(context.Background(), &CreateUserRoleParams{
+		ID:   1,
+		Name: "Admin",
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, role)
 
@@ -19,7 +22,10 @@ func TestCreateUserRole(t *testing.T) {
 }
 
 func TestGetUserRoleById(t *testing.T) {
-	role, err := testQueries.CreateUserRole(context.Background(), "Admin")
+	role, err := testQueries.CreateUserRole(context.Background(), &CreateUserRoleParams{
+		ID:   1,
+		Name: "Admin",
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, role)
 
@@ -32,7 +38,10 @@ func TestGetUserRoleById(t *testing.T) {
 }
 
 func TestDeleteUserRole(t *testing.T) {
-	role, err := testQueries.CreateUserRole(context.Background(), "Admin")
+	role, err := testQueries.CreateUserRole(context.Background(), &CreateUserRoleParams{
+		ID:   1,
+		Name: "Admin",
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, role)
 

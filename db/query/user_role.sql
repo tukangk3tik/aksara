@@ -1,7 +1,8 @@
 -- name: CreateUserRole :one
 INSERT INTO user_roles (
+  id,
   name
-) VALUES ($1)
+) VALUES ($1, $2)
 RETURNING *;
 
 -- name: GetUserRoleById :one 

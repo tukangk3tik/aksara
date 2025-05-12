@@ -11,7 +11,7 @@ INSERT INTO offices (
   created_by
 )
 VALUES (
-  7296845621728681984,
+  1,
   'KP01',
   'Kantor Pusat',
   31,
@@ -23,7 +23,7 @@ VALUES (
   7296478839281065984
 ),
 (
-  7296848305215021056,
+  2,
   'KDB01',
   'Kantor Kab. Belu',
   53,
@@ -47,7 +47,7 @@ INSERT INTO schools (
   created_by
 )
 VALUES (
-  7296849298463956992,
+  1,
   'KDBLSDIA1',
   'SDI Asuulun',
   7296848305215021056,
@@ -57,7 +57,7 @@ VALUES (
   7296478839281065984
 ),
 (
-  7296853616193740800,
+  2,
   'KDBLSMPNTB1',
   'SMPN 1 Tasifeto Barat',
   7296848305215021056,

@@ -8,23 +8,33 @@ import (
 
 var UserRolesSeed = []UserRoles{
 	{
+		ID:   1,
 		Name: "Super Admin",
 	},
 	{
+		ID:   2,
 		Name: "Admin Regional",
 	},
 	{
+		ID:   3,
 		Name: "Operator Sekolah",
 	},
 	{
+		ID:   4,
 		Name: "Guru",
 	},
 }
 
 func SeedUserRoles(testQueries *Queries, ctx context.Context) {
 	for _, userRole := range UserRolesSeed {
-		_, err := testQueries.CreateUserRole(ctx, userRole.Name)
+		_, err := testQueries.CreateUserRole(ctx, &CreateUserRoleParams{
+			ID:   userRole.ID,
+			Name: userRole.Name,
+		})
 		if err != nil {
+			if err.Error() == "pq: duplicate key value violates unique constraint \"user_roles_pkey\"" {
+				continue
+			}
 			log.Fatal("cannot create user role:", err)
 		}
 	}
