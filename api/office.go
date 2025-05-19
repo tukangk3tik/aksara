@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	db "github.com/tukangk3tik/aksara/db/sqlc"
 	"github.com/tukangk3tik/aksara/dto/request"
 	"github.com/tukangk3tik/aksara/dto/response"
@@ -26,7 +27,7 @@ func (server *Server) getOffices(ctx *gin.Context) {
 	offset := (req.Page - 1) * req.Limit
 	arg := db.ListAllOfficesParams{
 		Limit:  req.Limit,
-		Offset: offset, 
+		Offset: offset,
 	}
 
 	offices, err := server.store.ListAllOffices(ctx, &arg)
@@ -39,7 +40,7 @@ func (server *Server) getOffices(ctx *gin.Context) {
 	index := offset + 1
 	items := []response.OfficeResponse{}
 	for _, item := range offices {
-		itemI := parseOfficeModelToResponse(item)
+		itemI := parseOfficeRowModelToResponse(item)
 		itemI.Index = fmt.Sprintf("#%d", index)
 		items = append(items, itemI)
 		index++
@@ -88,17 +89,37 @@ func (server *Server) createOffice(ctx *gin.Context) {
 
 	newOffice, err := server.store.CreateOffice(ctx, &createParams)
 	if err != nil {
-		if db.ErrorCode(err) == db.UniqueViolation {
-			log.Warn(err.Error())
-			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], nil))
-			return
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code {
+			case db.ForeignKeyViolation, db.UniqueViolation:
+				constraintName := pqErr.Constraint
+				fieldName := ""
+				errorMsg := ""
+
+				if constraintName == "offices_code_key" {
+					fieldName = "code"
+					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Kode")
+				} else if constraintName == "offices_email_key" {
+					fieldName = "email"
+					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Email")
+				}
+
+				errorData := []string{
+					fieldName,
+				}
+
+				log.Warn(err.Error())
+				ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", errorMsg, errorData))
+				return
+			}
 		}
 
+		log.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": newOffice.ID}})
+	ctx.JSON(http.StatusCreated, response.TrxSuccessResponse{TraceID: traceID, Data: parseOfficeModelToResponse(newOffice)})
 }
 
 func (server *Server) updateOffice(ctx *gin.Context) {
@@ -120,59 +141,59 @@ func (server *Server) updateOffice(ctx *gin.Context) {
 		return
 	}
 
-	findOffice, err := server.store.GetSchoolById(ctx, int64(params.ID))
+	findOffice, err := server.store.GetOfficeById(ctx, int64(params.ID))
 	if err != nil {
 		log.Warn(err.Error())
-		ctx.JSON(http.StatusNotFound, response.BuildTrxErrorResponse(traceID, "NOT_FOUND", utils.ErrorCodeMap["NOT_FOUND"], nil))
+		errorMsg := fmt.Sprintf(utils.ErrorCodeMap["NOT_FOUND"], "Kantor")
+		ctx.JSON(http.StatusNotFound, response.BuildTrxErrorResponse(traceID, "NOT_FOUND", errorMsg, nil))
 		return
 	}
 
-	updateParams := db.UpdateSchoolParams{
+	updateParams := db.UpdateOfficeParams{
+		Code:       findOffice.Code,
 		Name:       req.Name,
 		ProvinceID: findOffice.ProvinceID,
 		RegencyID:  findOffice.RegencyID,
 		DistrictID: findOffice.DistrictID,
-		Email:      findOffice.Email,
-		Phone:      findOffice.Phone,
-		Address:    findOffice.Address,
-		LogoUrl:    findOffice.LogoUrl,
+		Email:      req.Email,
+		Phone:      sql.NullString{String: req.Phone, Valid: req.Phone != ""},
+		Address:    sql.NullString{String: req.Address, Valid: req.Address != ""},
+		LogoUrl:    sql.NullString{String: req.LogoURL, Valid: req.LogoURL != ""},
 		ID:         int64(params.ID),
 	}
 
-	if req.Phone != "" {
-		updateParams.Phone = sql.NullString{
-			String: req.Phone,
-			Valid:  true,
-		}
-	}
-
-	if req.Address != "" {
-		updateParams.Address = sql.NullString{
-			String: req.Address,
-			Valid:  true,
-		}
-	}
-
-	if req.LogoURL != "" {
-		updateParams.LogoUrl = sql.NullString{
-			String: req.LogoURL,
-			Valid:  true,
-		}
-	}
-
-	_, err = server.store.UpdateSchool(ctx, &updateParams)
+	office, err := server.store.UpdateOffice(ctx, &updateParams)
 	if err != nil {
-		if db.ErrorCode(err) == db.UniqueViolation {
-			log.Warn(err.Error())
-			ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", utils.ErrorCodeMap["DUPLICATE_ENTRY"], nil))
-			return
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code {
+			case db.ForeignKeyViolation, db.UniqueViolation:
+				constraintName := pqErr.Constraint
+				fieldName := ""
+				errorMsg := ""
+
+				if constraintName == "offices_code_key" {
+					fieldName = "code"
+					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Kode")
+				} else if constraintName == "offices_email_key" {
+					fieldName = "email"
+					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Email")
+				}
+
+				errorData := []string{
+					fieldName,
+				}
+
+				log.Warn(err.Error())
+				ctx.JSON(http.StatusBadRequest, response.BuildTrxErrorResponse(traceID, "DUPLICATE_ENTRY", errorMsg, errorData))
+				return
+			}
 		}
 
 		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": findOffice.ID}})
+	ctx.JSON(http.StatusOK, response.TrxSuccessResponse{TraceID: traceID, Data: parseOfficeModelToResponse(office)})
 }
 
 func (server *Server) deleteOffice(ctx *gin.Context) {
@@ -188,7 +209,7 @@ func (server *Server) deleteOffice(ctx *gin.Context) {
 
 	traceID := ctx.MustGet("trace_id").(string)
 
-	res, err := server.store.DeleteSchool(ctx, int64(params.ID))
+	res, err := server.store.DeleteOffice(ctx, int64(params.ID))
 	if err != nil {
 		log.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, response.BuildTrxErrorResponse(traceID, "INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
@@ -204,25 +225,45 @@ func (server *Server) deleteOffice(ctx *gin.Context) {
 
 	if rowsA == 0 {
 		log.Warn("Office not found")
-		ctx.JSON(http.StatusNotFound, response.BuildTrxErrorResponse(traceID, "NOT_FOUND", utils.ErrorCodeMap["NOT_FOUND"], nil))
+		errorMsg := fmt.Sprintf(utils.ErrorCodeMap["NOT_FOUND"], "Kantor")
+		ctx.JSON(http.StatusNotFound, response.BuildTrxErrorResponse(traceID, "NOT_FOUND", errorMsg, nil))
 		return
 	}
 
 	ctx.JSON(http.StatusOK, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": params.ID}})
 }
 
-func parseOfficeModelToResponse(model db.ListAllOfficesRow) response.OfficeResponse {
+func parseOfficeRowModelToResponse(model db.ListAllOfficesRow) response.OfficeResponse {
 	return response.OfficeResponse{
-		ID:        int64(model.ID),
-		Code:      model.Code,
-		Name:      model.Name,
-		Province:  model.Province,
-		Regency:   model.Regency,
-		District:  model.District.String,
-		Email:     model.Email,
-		Phone:     model.Phone.String,
-		Address:   model.Address.String,
-		LogoURL:   model.LogoUrl.String,
-		CreatedBy: model.CreatedBy,
+		ID:         int64(model.ID),
+		Code:       model.Code,
+		Name:       model.Name,
+		Province:   model.Province,
+		Regency:    model.Regency,
+		District:   model.District.String,
+		ProvinceID: int64(model.ProvinceID),
+		RegencyID:  int64(model.RegencyID),
+		DistrictID: int64(model.DistrictID),
+		Email:      model.Email,
+		Phone:      model.Phone.String,
+		Address:    model.Address.String,
+		LogoURL:    model.LogoUrl.String,
+		CreatedBy:  model.CreatedBy,
+	}
+}
+
+func parseOfficeModelToResponse(model db.Offices) response.OfficeResponse {
+	return response.OfficeResponse{
+		ID:         int64(model.ID),
+		Code:       model.Code,
+		Name:       model.Name,
+		ProvinceID: int64(model.ProvinceID),
+		RegencyID:  int64(model.RegencyID),
+		DistrictID: int64(model.DistrictID),
+		Email:      model.Email,
+		Phone:      model.Phone.String,
+		Address:    model.Address.String,
+		LogoURL:    model.LogoUrl.String,
+		CreatedBy:  model.CreatedBy,
 	}
 }

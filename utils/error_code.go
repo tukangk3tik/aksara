@@ -8,5 +8,5 @@ var ErrorCodeMap = map[string]string{
 	"INTERNAL_SERVER_ERROR": "Terjadi Kesalahan",
 	"WRONG_PASSWORD":        "Password salah",
 	"FOREIGN_KEY_VIOLATION": "Kesalahan pada kunci asing",
-	"DUPLICATE_ENTRY":       "Data yang sama sudah ada",
+	"DUPLICATE_ENTRY":       "%s tidak tersedia",
 }
