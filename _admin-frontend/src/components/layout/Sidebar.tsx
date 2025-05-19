@@ -67,13 +67,16 @@ const Sidebar: React.FC = () => {
                       <Link
                         key={child.id}
                         to={child.path || '#'}
-                        className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                        className={`flex items-center px-1 py-2 text-sm rounded-md ${
                           isChildItemActive 
                             ? 'bg-orange-200 text-primary-dark font-medium' 
                             : 'hover:bg-orange-100'
                         }`}
                       >
-                        {child.title}
+                        <div className="flex items-center justify-center w-5 h-5">
+                          <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                        </div>
+                        <span className={`ml-3 ${isOpen ? 'block' : 'hidden'}`}>{child.title}</span>
                       </Link>
                     );
                   })}

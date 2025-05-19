@@ -14,35 +14,30 @@ export const navigationItems: NavItem[] = [
     children: [
       {
         id: 'offices',
-        title: 'Office',
+        title: 'Kantor',
         path: '/master/office',
       },
       {
         id: 'school',
-        title: 'School',
+        title: 'Sekolah',
         path: '/master/school',
       },
-      // {
-      //   id: 'student',
-      //   title: 'Student',
-      //   path: '/master/student',
-      // },
       {
         id: 'teacher',
-        title: 'Teacher',
+        title: 'Guru',
         path: '/master/teacher',
       },
     ],
   },
   {
     id: 'users',
-    title: 'Users',
+    title: 'Pengguna',
     path: '/users',
     icon: 'UserGroupIcon',
   },
   {
     id: 'settings',
-    title: 'Settings',
+    title: 'Pengaturan',
     path: '/settings',
     icon: 'CogIcon',
   },

@@ -1,4 +1,4 @@
-import { LoginResponse } from '../types/auth';
+import { BadRequestError } from '../types/error';
 import { RequestHeaders } from '../types/header';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -10,7 +10,7 @@ const getAuthHeader = () => {
 };
 
 // Generic API request function with authentication
-async function apiRequest<T>(
+export async function apiRequest<T>(
   endpoint: string,
   method: string = 'GET',
   data?: any,
@@ -51,6 +51,11 @@ async function apiRequest<T>(
         // throw new Error('Session expired. Please login again.');
       // }
     }
+
+    if ((method === 'POST' || method === 'PUT' ) && response.status === 400) {
+      const errorData = await response.json();
+      throw new BadRequestError(errorData.trace_id, errorData.message, errorData.fields);
+    }
     
     const errorData = await response.json();
     // For login failures, provide a more user-friendly message
@@ -58,11 +63,11 @@ async function apiRequest<T>(
   }
 
   const responseData = await response.json();
-  return responseData.data;
+  return responseData;
 }
 
 // Authentication functions
-export async function loginUser(email: string, password: string): Promise<LoginResponse> {
+export async function loginUser<LoginResponse>(email: string, password: string): Promise<LoginResponse> {
   return apiRequest<LoginResponse>('/auth/login', 'POST', { email, password }, false);
 }
 
