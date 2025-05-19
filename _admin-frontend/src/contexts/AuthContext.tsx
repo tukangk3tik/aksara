@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { loginUser as apiLoginUser, logout as apiLogout } from '../services/api';
-import { User, AuthState } from '../types/auth';
+import { AuthState, LoginResponse } from '../types/auth';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
@@ -52,11 +52,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setLoading(true);
 
     try {
-      const response = await apiLoginUser(email, password);
+      const response = await apiLoginUser<LoginResponse>(email, password);
         
       // Store tokens
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.refresh_token);
         
       // In a real app, you would fetch user info here
       // const userInfo = await fetchUserInfo();
@@ -64,8 +64,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setAuthState({
         isAuthenticated: true,
         user: null, // Replace with userInfo in a real app
-        accessToken: response.access_token,
-        refreshToken: response.refresh_token,
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
       });
     } catch (error) {
       throw error;
