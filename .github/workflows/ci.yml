@@ -50,9 +50,11 @@ jobs:
       run: make import-loc-assets DB_URL="${{ vars.DB_SOURCE_TEST }}"
 
     - name: Set test environment variables
+      env:
+        DB_CONNECTION: ${{ vars.DB_SOURCE_TEST }}
       run: |
         touch app.env
-        echo "DB_SOURCE_TEST=${{ vars.DB_SOURCE_TEST }}" >> app.env
+        echo "DB_SOURCE_TEST=${DB_CONNECTION}" >> app.env
         cat app.env
 
     - name: Test
