@@ -49,5 +49,10 @@ jobs:
     - name: Import location assets
       run: make import-loc-assets DB_URL="${{ secrets.DB_SOURCE_TEST }}"
 
+    - name: Set test environment variables
+      run: |
+        touch app.env
+        echo "DB_SOURCE_TEST=${{ secrets.DB_SOURCE_TEST }}" >> app.env
+
     - name: Test
       run: make test
