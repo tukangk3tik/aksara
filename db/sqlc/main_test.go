@@ -7,18 +7,14 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
-	"github.com/tukangk3tik/aksara/utils"
 )
 
 var testQueries *Queries
+const DB_DRIVER = "postgres"
+const DB_SOURCE_TEST = "postgres://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable"
 
 func TestMain(m *testing.M) {
-	config, err := utils.LoadConfig("../../") // app root path
-	if err != nil {
-		log.Fatal("cannot load config:", err)
-	}
-
-	conn, err := sql.Open(config.DBDriver, config.DBSourceTest)
+	conn, err := sql.Open(DB_DRIVER, DB_SOURCE_TEST)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
