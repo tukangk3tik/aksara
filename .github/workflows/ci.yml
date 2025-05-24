@@ -44,17 +44,15 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: make migrate-up DB_URL="${{ vars.DB_SOURCE_TEST }}"
+      run: make migrate-up DB_URL="postgres://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable"
 
     - name: Import location assets
-      run: make import-loc-assets DB_URL="${{ vars.DB_SOURCE_TEST }}"
+      run: make import-loc-assets DB_URL="postgres://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable"
 
     - name: Set test environment variables
-      env:
-        DB_CONNECTION: ${{ vars.DB_SOURCE_TEST }}
       run: |
         touch app.env
-        echo "DB_SOURCE_TEST=${DB_CONNECTION}" >> app.env
+        echo "DB_SOURCE_TEST=postgres://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable" >> app.env
         cat app.env
 
     - name: Test
