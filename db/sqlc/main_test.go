@@ -9,15 +9,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://postgres:aksara2025@localhost:5432/aksara?sslmode=disable"
-)
-
 var testQueries *Queries
+const DB_DRIVER = "postgres"
+const DB_SOURCE_TEST = "postgres://postgres:aksara2025@localhost:5432/aksara_test?sslmode=disable"
 
 func TestMain(m *testing.M) {
-	conn, err := sql.Open(dbDriver, dbSource)
+	conn, err := sql.Open(DB_DRIVER, DB_SOURCE_TEST)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}

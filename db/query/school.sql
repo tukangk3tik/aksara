@@ -1,6 +1,5 @@
 -- name: CreateSchool :one
 INSERT INTO schools (
-  id,
   code,
   name,
   office_id,
@@ -13,20 +12,36 @@ INSERT INTO schools (
   logo_url,
   created_by
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING *;
 
 -- name: GetSchoolById :one
-SELECT * FROM schools 
-WHERE id = $1 
-AND deleted_at IS NULL 
-LIMIT 1;
+SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, 
+a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, 
+b.name as office, c.name as province, d.name as regency, e.name as district,
+a.created_at, a.updated_at
+FROM schools a
+JOIN offices b ON a.office_id = b.id
+JOIN loc_provinces c ON a.province_id = c.id
+JOIN loc_regencies d ON a.regency_id = d.id
+LEFT JOIN loc_districts e ON a.district_id = e.id
+WHERE a.deleted_at IS NULL 
+AND a.id = $1;
 
 -- name: ListAllSchools :many
-SELECT * FROM schools
-WHERE deleted_at IS NULL 
-ORDER BY id
+SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
+FROM schools a
+JOIN offices b ON a.office_id = b.id
+JOIN loc_provinces c ON a.province_id = c.id
+JOIN loc_regencies d ON a.regency_id = d.id
+LEFT JOIN loc_districts e ON a.district_id = e.id
+WHERE a.deleted_at IS NULL 
+ORDER BY a.id
 LIMIT $1 OFFSET $2;
+
+-- name: TotalListAllSchools :one
+SELECT COUNT(*) as total_items FROM schools
+WHERE deleted_at IS NULL;
 
 -- name: ListSchoolsByProvince :many
 SELECT * FROM schools
@@ -58,18 +73,17 @@ LIMIT $2 OFFSET $3;
 
 -- name: UpdateSchool :one
 UPDATE schools
-SET code = $1,
-  name = $2,
-  office_id = $3,
-  province_id = $4,
-  regency_id = $5,
-  district_id = $6,
-  email = $7,
-  phone = $8,
-  address = $9,
-  logo_url = $10,
+SET name = $1,
+  office_id = $2,
+  province_id = $3,
+  regency_id = $4,
+  district_id = $5,
+  email = $6,
+  phone = $7,
+  address = $8,
+  logo_url = $9,
   updated_at = CURRENT_TIMESTAMP
-WHERE id = $11  
+WHERE id = $10  
 AND deleted_at IS NULL
 RETURNING *;
 

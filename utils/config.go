@@ -9,12 +9,15 @@ import (
 
 // Config stores all configuration of the application
 // The values are read by viper from a config file or environment variable
+// Config stores all the configuration settings for the application.
+// The fields are populated using Viper from a configuration file or environment variables.
 type Config struct {
-	AppEnv               string        `mapstructure:"APP_ENV"`
-	AppLogPath           string        `mapstructure:"APP_LOG_PATH"`
-	DBDriver             string        `mapstructure:"DB_DRIVER"`
-	DBSource             string        `mapstructure:"DB_SOURCE"`
-	HttpServerAddress    string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	AppEnv            string `mapstructure:"APP_ENV"`
+	AppLogPath        string `mapstructure:"APP_LOG_PATH"`
+	DBDriver          string `mapstructure:"DB_DRIVER"`
+	DBSource          string `mapstructure:"DB_SOURCE"`
+	DBSourceTest      string `mapstructure:"DB_SOURCE_TEST"`
+	HttpServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
 	// GrpcServerAddress    string        `mapstructure:"GRPC_SERVER_ADDRESS"`
 	TokenSymmetricKey    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`

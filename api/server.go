@@ -76,6 +76,15 @@ func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 	officeGroup.PUT("/:id", server.updateOffice)
 	officeGroup.DELETE("/:id", server.deleteOffice)
 
+	// school router
+	schoolGroup := router.Group("/schools")
+	schoolGroup.Use(security.AuthorizeJwt(tokenMaker))
+	schoolGroup.GET("", server.getSchools)
+	schoolGroup.GET("/:id", server.getSchoolById)
+	schoolGroup.POST("", server.createSchool)
+	schoolGroup.PUT("/:id", server.updateSchool)
+	schoolGroup.DELETE("/:id", server.deleteSchool)
+
 	server.router = router
 }
 

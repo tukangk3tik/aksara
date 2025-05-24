@@ -234,10 +234,10 @@ func (mr *MockStoreMockRecorder) GetOfficeById(ctx, id any) *gomock.Call {
 }
 
 // GetSchoolById mocks base method.
-func (m *MockStore) GetSchoolById(ctx context.Context, id int64) (db.Schools, error) {
+func (m *MockStore) GetSchoolById(ctx context.Context, id int64) (db.GetSchoolByIdRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSchoolById", ctx, id)
-	ret0, _ := ret[0].(db.Schools)
+	ret0, _ := ret[0].(db.GetSchoolByIdRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -309,10 +309,10 @@ func (mr *MockStoreMockRecorder) ListAllOffices(ctx, arg any) *gomock.Call {
 }
 
 // ListAllSchools mocks base method.
-func (m *MockStore) ListAllSchools(ctx context.Context, arg *db.ListAllSchoolsParams) ([]db.Schools, error) {
+func (m *MockStore) ListAllSchools(ctx context.Context, arg *db.ListAllSchoolsParams) ([]db.ListAllSchoolsRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAllSchools", ctx, arg)
-	ret0, _ := ret[0].([]db.Schools)
+	ret0, _ := ret[0].([]db.ListAllSchoolsRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -486,6 +486,21 @@ func (m *MockStore) TotalListAllOffices(ctx context.Context) (int64, error) {
 func (mr *MockStoreMockRecorder) TotalListAllOffices(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListAllOffices", reflect.TypeOf((*MockStore)(nil).TotalListAllOffices), ctx)
+}
+
+// TotalListAllSchools mocks base method.
+func (m *MockStore) TotalListAllSchools(ctx context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TotalListAllSchools", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TotalListAllSchools indicates an expected call of TotalListAllSchools.
+func (mr *MockStoreMockRecorder) TotalListAllSchools(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListAllSchools", reflect.TypeOf((*MockStore)(nil).TotalListAllSchools), ctx)
 }
 
 // TotalListAllUsers mocks base method.
