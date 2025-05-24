@@ -44,10 +44,10 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: make migrate-up DB_URL="${{ secrets.DB_SOURCE_TEST }}"
+      run: make migrate-up DB_URL="${{ vars.DB_SOURCE_TEST }}"
 
     - name: Import location assets
-      run: make import-loc-assets DB_URL="${{ secrets.DB_SOURCE_TEST }}"
+      run: make import-loc-assets DB_URL="${{ vars.DB_SOURCE_TEST }}"
 
     - name: Set test environment variables
       run: |
