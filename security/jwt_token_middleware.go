@@ -9,11 +9,17 @@ import (
 	"github.com/tukangk3tik/aksara/utils"
 )
 
+const (
+	AuthorizationHeaderKey  = "Authorization"
+	AuthorizationTypeBearer = "Bearer"
+	AuthorizationPayloadKey = "AuthorizationPayload"
+)
+
 func AuthorizeJwt(tokenMaker TokenMaker) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
+		authHeader := c.GetHeader(AuthorizationHeaderKey)
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusBadRequest, response.BuildErrorResponse("UNAUTHORIZED", utils.ErrorCodeMap["UNAUTHORIZED"], nil))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response.BuildErrorResponse("UNAUTHORIZED", utils.ErrorCodeMap["UNAUTHORIZED"], nil))
 			return
 		}
 
@@ -25,6 +31,7 @@ func AuthorizeJwt(tokenMaker TokenMaker) gin.HandlerFunc {
 		}
 
 		c.Set("user_id", validateRes.UserId)
+		c.Set(AuthorizationPayloadKey, validateRes)
 		c.Next()
 	}
 }

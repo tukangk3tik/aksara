@@ -23,12 +23,12 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) (sql.Result, error)
 	DeleteUserRole(ctx context.Context, id int32) (sql.Result, error)
 	GetOfficeById(ctx context.Context, id int64) (GetOfficeByIdRow, error)
-	GetSchoolById(ctx context.Context, id int64) (Schools, error)
+	GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserById(ctx context.Context, id int64) (Users, error)
 	GetUserRoleById(ctx context.Context, id int32) (UserRoles, error)
 	ListAllOffices(ctx context.Context, arg *ListAllOfficesParams) ([]ListAllOfficesRow, error)
-	ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]Schools, error)
+	ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]ListAllSchoolsRow, error)
 	ListAllUserRoles(ctx context.Context, arg *ListAllUserRolesParams) ([]UserRoles, error)
 	ListAllUsers(ctx context.Context, arg *ListAllUsersParams) ([]Users, error)
 	// Optional province filter
@@ -44,6 +44,7 @@ type Querier interface {
 	LocationProvince(ctx context.Context, arg *LocationProvinceParams) ([]LocProvinces, error)
 	LocationRegencyByProvince(ctx context.Context, arg *LocationRegencyByProvinceParams) ([]LocRegencies, error)
 	TotalListAllOffices(ctx context.Context) (int64, error)
+	TotalListAllSchools(ctx context.Context) (int64, error)
 	TotalListAllUsers(ctx context.Context) (int64, error)
 	// Optional province filter
 	// Optional regency filter

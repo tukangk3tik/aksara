@@ -12,7 +12,6 @@ import (
 
 const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
-  id,
   code,
   name,
   office_id,
@@ -25,12 +24,11 @@ INSERT INTO schools (
   logo_url,
   created_by
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 type CreateSchoolParams struct {
-	ID         int64          `json:"id"`
 	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	OfficeID   sql.NullInt64  `json:"office_id"`
@@ -46,7 +44,6 @@ type CreateSchoolParams struct {
 
 func (q *Queries) CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Schools, error) {
 	row := q.db.QueryRowContext(ctx, createSchool,
-		arg.ID,
 		arg.Code,
 		arg.Name,
 		arg.OfficeID,
@@ -93,15 +90,43 @@ func (q *Queries) DeleteSchool(ctx context.Context, id int64) (sql.Result, error
 }
 
 const getSchoolById = `-- name: GetSchoolById :one
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools 
-WHERE id = $1 
-AND deleted_at IS NULL 
-LIMIT 1
+SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, 
+a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, 
+b.name as office, c.name as province, d.name as regency, e.name as district,
+a.created_at, a.updated_at
+FROM schools a
+JOIN offices b ON a.office_id = b.id
+JOIN loc_provinces c ON a.province_id = c.id
+JOIN loc_regencies d ON a.regency_id = d.id
+LEFT JOIN loc_districts e ON a.district_id = e.id
+WHERE a.deleted_at IS NULL 
+AND a.id = $1
 `
 
-func (q *Queries) GetSchoolById(ctx context.Context, id int64) (Schools, error) {
+type GetSchoolByIdRow struct {
+	ID         int64          `json:"id"`
+	Code       string         `json:"code"`
+	Name       string         `json:"name"`
+	OfficeID   sql.NullInt64  `json:"office_id"`
+	ProvinceID int32          `json:"province_id"`
+	RegencyID  int32          `json:"regency_id"`
+	DistrictID int32          `json:"district_id"`
+	Email      sql.NullString `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Address    sql.NullString `json:"address"`
+	LogoUrl    sql.NullString `json:"logo_url"`
+	CreatedBy  int64          `json:"created_by"`
+	Office     string         `json:"office"`
+	Province   string         `json:"province"`
+	Regency    string         `json:"regency"`
+	District   sql.NullString `json:"district"`
+	CreatedAt  sql.NullTime   `json:"created_at"`
+	UpdatedAt  sql.NullTime   `json:"updated_at"`
+}
+
+func (q *Queries) GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getSchoolById, id)
-	var i Schools
+	var i GetSchoolByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.Code,
@@ -115,17 +140,25 @@ func (q *Queries) GetSchoolById(ctx context.Context, id int64) (Schools, error) 
 		&i.Address,
 		&i.LogoUrl,
 		&i.CreatedBy,
+		&i.Office,
+		&i.Province,
+		&i.Regency,
+		&i.District,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const listAllSchools = `-- name: ListAllSchools :many
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
-WHERE deleted_at IS NULL 
-ORDER BY id
+SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
+FROM schools a
+JOIN offices b ON a.office_id = b.id
+JOIN loc_provinces c ON a.province_id = c.id
+JOIN loc_regencies d ON a.regency_id = d.id
+LEFT JOIN loc_districts e ON a.district_id = e.id
+WHERE a.deleted_at IS NULL 
+ORDER BY a.id
 LIMIT $1 OFFSET $2
 `
 
@@ -134,15 +167,34 @@ type ListAllSchoolsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]Schools, error) {
+type ListAllSchoolsRow struct {
+	ID         int64          `json:"id"`
+	Code       string         `json:"code"`
+	Name       string         `json:"name"`
+	OfficeID   sql.NullInt64  `json:"office_id"`
+	ProvinceID int32          `json:"province_id"`
+	RegencyID  int32          `json:"regency_id"`
+	DistrictID int32          `json:"district_id"`
+	Email      sql.NullString `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Address    sql.NullString `json:"address"`
+	LogoUrl    sql.NullString `json:"logo_url"`
+	CreatedBy  int64          `json:"created_by"`
+	Office     string         `json:"office"`
+	Province   string         `json:"province"`
+	Regency    string         `json:"regency"`
+	District   sql.NullString `json:"district"`
+}
+
+func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]ListAllSchoolsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listAllSchools, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Schools
+	var items []ListAllSchoolsRow
 	for rows.Next() {
-		var i Schools
+		var i ListAllSchoolsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Code,
@@ -156,9 +208,10 @@ func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams)
 			&i.Address,
 			&i.LogoUrl,
 			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
+			&i.Office,
+			&i.Province,
+			&i.Regency,
+			&i.District,
 		); err != nil {
 			return nil, err
 		}
@@ -385,26 +438,36 @@ func (q *Queries) ListSchoolsByRegency(ctx context.Context, arg *ListSchoolsByRe
 	return items, nil
 }
 
+const totalListAllSchools = `-- name: TotalListAllSchools :one
+SELECT COUNT(*) as total_items FROM schools
+WHERE deleted_at IS NULL
+`
+
+func (q *Queries) TotalListAllSchools(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalListAllSchools)
+	var total_items int64
+	err := row.Scan(&total_items)
+	return total_items, err
+}
+
 const updateSchool = `-- name: UpdateSchool :one
 UPDATE schools
-SET code = $1,
-  name = $2,
-  office_id = $3,
-  province_id = $4,
-  regency_id = $5,
-  district_id = $6,
-  email = $7,
-  phone = $8,
-  address = $9,
-  logo_url = $10,
+SET name = $1,
+  office_id = $2,
+  province_id = $3,
+  regency_id = $4,
+  district_id = $5,
+  email = $6,
+  phone = $7,
+  address = $8,
+  logo_url = $9,
   updated_at = CURRENT_TIMESTAMP
-WHERE id = $11  
+WHERE id = $10  
 AND deleted_at IS NULL
 RETURNING id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 type UpdateSchoolParams struct {
-	Code       string         `json:"code"`
 	Name       string         `json:"name"`
 	OfficeID   sql.NullInt64  `json:"office_id"`
 	ProvinceID int32          `json:"province_id"`
@@ -419,7 +482,6 @@ type UpdateSchoolParams struct {
 
 func (q *Queries) UpdateSchool(ctx context.Context, arg *UpdateSchoolParams) (Schools, error) {
 	row := q.db.QueryRowContext(ctx, updateSchool,
-		arg.Code,
 		arg.Name,
 		arg.OfficeID,
 		arg.ProvinceID,

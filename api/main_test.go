@@ -12,6 +12,30 @@ import (
 	"github.com/tukangk3tik/aksara/utils"
 )
 
+const provinceID = 53
+const regencyID = 5371
+const districtID = 5371010
+
+type mockSQLResult struct{}
+
+func (m mockSQLResult) LastInsertId() (int64, error) {
+	return 0, nil
+}
+
+func (m mockSQLResult) RowsAffected() (int64, error) {
+	return 1, nil
+}
+
+type mockNotFoundSQLResult struct{}
+
+func (m mockNotFoundSQLResult) LastInsertId() (int64, error) {
+	return 0, nil
+}
+
+func (m mockNotFoundSQLResult) RowsAffected() (int64, error) {
+	return 0, nil
+}
+
 func newTestServer(t *testing.T, store db.Store) *Server {
 	config := utils.Config{
 		TokenSymmetricKey:    utils.RandomString(32),
