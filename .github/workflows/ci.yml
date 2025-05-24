@@ -52,7 +52,7 @@ jobs:
     - name: Set test environment variables
       run: |
         touch app.env
-        echo "DB_SOURCE_TEST=${{ secrets.DB_SOURCE_TEST }}" >> app.env
+        echo "DB_SOURCE_TEST=${{ vars.DB_SOURCE_TEST }}" >> app.env
         cat app.env
 
     - name: Test
