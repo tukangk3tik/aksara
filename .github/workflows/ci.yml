@@ -53,6 +53,7 @@ jobs:
       run: |
         touch app.env
         echo "DB_SOURCE_TEST=${{ secrets.DB_SOURCE_TEST }}" >> app.env
+        cat app.env
 
     - name: Test
       run: make test
