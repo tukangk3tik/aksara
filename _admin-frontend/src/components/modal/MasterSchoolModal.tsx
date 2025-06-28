@@ -1,15 +1,33 @@
 import { FiPlus, FiX } from "react-icons/fi";
 import Button from "../Button";
 import SelectSearchOption from "../SelectOption";
-import { CreateUpdateOffice } from "../../types/office";
-import { LocationData } from "../../types/location";
+import { CreateUpdateSchool } from "../../types/school";
 import React from "react";
+import { LocationData } from "../../types/location";
+import { SelectOption } from "../../types/utils";
 
-interface MasterOfficeModalProps {
+export interface OfficeData {
+  data: {
+    values: SelectOption[];
+    label: string;
+    isLoading: boolean;
+    selectedValue: SelectOption | null;
+    searchTerm: string;
+    filteredOptions: SelectOption[];
+    fieldError: string;
+    placeholder: string
+  },
+  onChange: (office: SelectOption) => void,
+  handleQueryChange: (query: string) => void,
+  handleClearSearch: () => void
+}
+
+interface MasterSchoolModalProps {
   formTitle: string;
   isSubmitting: boolean;
   isModalAnimating: boolean;
-  formData: CreateUpdateOffice;
+  officeData: OfficeData;
+  formData: CreateUpdateSchool;
   formErrors: {[key: string]: string};
   locationData: LocationData;
   closeModal: () => void;
@@ -18,12 +36,13 @@ interface MasterOfficeModalProps {
   handleSubmit: () => void;
 }
 
-const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
+const MasterSchoolModal: React.FC<MasterSchoolModalProps> = ({
   formTitle,
   isSubmitting,
   isModalAnimating,
   formData,
   formErrors,
+  officeData,
   locationData,
   closeModal,
   onAnimationEnd,
@@ -67,9 +86,46 @@ const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Your existing form fields - keeping them intact */}
               {/* Code */}
+
+              {/* School Type (Negeri/Swasta) */}
+              <div className="col-span-2">
+                <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+                  Kepemilikan <span className="text-red-500">*</span>
+                </label>
+                <div className="flex space-x-6">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      disabled={isEdit}
+                      name="is_public_school"
+                      checked={formData.is_public_school === true}
+                      onChange={() => handleInputChange({ target: { name: 'is_public_school', value: true } } as unknown as React.ChangeEvent<HTMLInputElement>)}
+                      className="h-4 w-4 text-amber-500 focus:ring-amber-500 border-gray-300"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Negeri</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      disabled={isEdit}
+                      name="is_public_school"
+                      checked={formData.is_public_school === false}
+                      onChange={() => handleInputChange({ target: { name: 'is_public_school', value: false } } as unknown as React.ChangeEvent<HTMLInputElement>)}
+                      className="h-4 w-4 text-amber-500 focus:ring-amber-500 border-gray-300"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Swasta</span>
+                  </label>
+                </div>
+                {formErrors.is_public_school && (
+                  <p className="mt-1 text-xs text-red-500 flex items-center">
+                    <span className="mr-1">⚠</span> {formErrors.is_public_school}
+                  </p>
+                )}
+              </div>
+
               <div>
                 <label htmlFor="code" className="block text-sm font-medium leading-6 text-gray-900">
-                  Kode Kantor <span className="text-red-500">*</span>
+                  Kode Sekolah <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-1">
                   <input
@@ -77,7 +133,7 @@ const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
                     type="text"
                     id="code"
                     name="code"
-                    placeholder="Contoh: KTR001"
+                    placeholder="Contoh: SDN01"
                     value={formData.code}
                     onChange={handleInputChange}
                     className={`block w-full rounded-md px-2 py-1.5 text-sm shadow-sm ring-1 
@@ -95,14 +151,14 @@ const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
               {/* Name */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Nama Kantor <span className="text-red-500">*</span>
+                  Nama Sekolah <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-1">
                   <input
                     type="text"
                     id="name"
                     name="name"
-                    placeholder="Nama kantor"
+                    placeholder="Nama sekolah"
                     value={formData.name}
                     onChange={handleInputChange}
                     className={`block w-full rounded-md px-2 py-1.5 text-sm shadow-sm ring-1 ${formErrors.name ? 'ring-red-500' : 'ring-gray-300'} focus:ring-2 focus:ring-amber-500`}
@@ -114,6 +170,27 @@ const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
                   )}
                 </div>
               </div>
+
+
+              {/* Office */}
+              <SelectSearchOption
+                data={{
+                  values: officeData.data.values,
+                  label: "Kantor",
+                  isLoading: officeData.data.isLoading,
+                  selectedValue: officeData.data.selectedValue,
+                  searchTerm: officeData.data.searchTerm,
+                  filteredOptions: officeData.data.filteredOptions,
+                  fieldError: formErrors.office_id,
+                  placeholder: "Pilih Kantor"
+                }}
+                isDisable={isEdit}
+                handleChange={officeData.onChange}
+                handleQueryChange={(e) => officeData.handleQueryChange(e.target.value)}
+                handleClearSearch={() => {
+                  officeData.handleClearSearch();
+                }}
+              />
                 
               {/* Province */}
               <SelectSearchOption
@@ -266,4 +343,4 @@ const MasterOfficeModal: React.FC<MasterOfficeModalProps> = ({
   );
 };
 
-export default MasterOfficeModal;
+export default MasterSchoolModal;

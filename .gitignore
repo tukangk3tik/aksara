@@ -5,3 +5,5 @@ logs/*
 !logs/.gitkeep
 
 **/.DS_Store
+
+data-aksara

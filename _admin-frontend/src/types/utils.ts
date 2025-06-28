@@ -2,9 +2,10 @@
 export interface SelectOption {
   id: number;
   name: string;
+  additional_data?: any | null;
 }
 
-export interface SelectOptionLocationData {
+export interface SelectOptionData {
   label: string;
   values: SelectOption[];
   isLoading: boolean;
@@ -16,7 +17,7 @@ export interface SelectOptionLocationData {
 }
 
 export interface SelectOptionProps {
-  data: SelectOptionLocationData;
+  data: SelectOptionData;
   onChange: (value: SelectOption) => void;
   handleQueryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClearSearch: () => void;

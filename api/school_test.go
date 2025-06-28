@@ -222,16 +222,17 @@ func TestGetSchoolAPI(t *testing.T) {
 func TestCreateSchoolAPI(t *testing.T) {
 	school := parseSchoolRowToSchoolModel(randomSchool(1))
 	postBody := gin.H{
-		"code":        school.Code,
-		"name":        school.Name,
-		"office_id":   school.OfficeID.Int64,
-		"province_id": school.ProvinceID,
-		"regency_id":  school.RegencyID,
-		"district_id": school.DistrictID,
-		"email":       school.Email.String,
-		"phone":       school.Phone.String,
-		"address":     school.Address.String,
-		"logo_url":    school.LogoUrl.String,
+		"code":             school.Code,
+		"name":             school.Name,
+		"is_public_school": school.IsPublicSchool,
+		"office_id":        school.OfficeID.Int64,
+		"province_id":      school.ProvinceID,
+		"regency_id":       school.RegencyID,
+		"district_id":      school.DistrictID,
+		"email":            school.Email.String,
+		"phone":            school.Phone.String,
+		"address":          school.Address.String,
+		"logo_url":         school.LogoUrl.String,
 	}
 
 	testCase := []struct {
@@ -246,17 +247,18 @@ func TestCreateSchoolAPI(t *testing.T) {
 			body: postBody,
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.CreateSchoolParams{
-					Code:       school.Code,
-					Name:       school.Name,
-					OfficeID:   school.OfficeID,
-					ProvinceID: school.ProvinceID,
-					RegencyID:  school.RegencyID,
-					DistrictID: school.DistrictID,
-					Email:      school.Email,
-					Phone:      school.Phone,
-					Address:    school.Address,
-					LogoUrl:    school.LogoUrl,
-					CreatedBy:  userID,
+					Code:           school.Code,
+					Name:           school.Name,
+					IsPublicSchool: school.IsPublicSchool,
+					OfficeID:       school.OfficeID,
+					ProvinceID:     school.ProvinceID,
+					RegencyID:      school.RegencyID,
+					DistrictID:     school.DistrictID,
+					Email:          school.Email,
+					Phone:          school.Phone,
+					Address:        school.Address,
+					LogoUrl:        school.LogoUrl,
+					CreatedBy:      userID,
 				}
 
 				store.EXPECT().
@@ -374,6 +376,7 @@ func TestUpdateSchoolAPI(t *testing.T) {
 	updateSchool.Phone = sql.NullString{String: "08123456789", Valid: true}
 	updateSchool.Address = sql.NullString{String: "Updated Address", Valid: true}
 	updateSchool.LogoUrl = sql.NullString{String: "updated_logo.png", Valid: true}
+	updateSchool.IsPublicSchool = true
 
 	testCase := []struct {
 		name          string
@@ -420,20 +423,21 @@ func TestUpdateSchoolAPI(t *testing.T) {
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 				updateSchoolRow := db.GetSchoolByIdRow{
-					ID:         updateSchool.ID,
-					Code:       updateSchool.Code,
-					Name:       updateSchool.Name,
-					OfficeID:   updateSchool.OfficeID,
-					ProvinceID: updateSchool.ProvinceID,
-					RegencyID:  updateSchool.RegencyID,
-					DistrictID: updateSchool.DistrictID,
-					Email:      updateSchool.Email,
-					Phone:      updateSchool.Phone,
-					Address:    updateSchool.Address,
-					LogoUrl:    updateSchool.LogoUrl,
-					CreatedAt:  updateSchool.CreatedAt,
-					UpdatedAt:  updateSchool.UpdatedAt,
-					CreatedBy:  updateSchool.CreatedBy,
+					ID:             updateSchool.ID,
+					Code:           updateSchool.Code,
+					Name:           updateSchool.Name,
+					IsPublicSchool: updateSchool.IsPublicSchool,
+					OfficeID:       updateSchool.OfficeID,
+					ProvinceID:     updateSchool.ProvinceID,
+					RegencyID:      updateSchool.RegencyID,
+					DistrictID:     updateSchool.DistrictID,
+					Email:          updateSchool.Email,
+					Phone:          updateSchool.Phone,
+					Address:        updateSchool.Address,
+					LogoUrl:        updateSchool.LogoUrl,
+					CreatedAt:      updateSchool.CreatedAt,
+					UpdatedAt:      updateSchool.UpdatedAt,
+					CreatedBy:      updateSchool.CreatedBy,
 				}
 
 				requireBodyMatchSchoolDetail(t, recorder.Body, updateSchoolRow)
@@ -707,61 +711,66 @@ func requireBodyMatchSchool(t *testing.T, body *bytes.Buffer, school db.Schools)
 
 func randomSchool(ID int) db.ListAllSchoolsRow {
 	return db.ListAllSchoolsRow{
-		ID:         int64(ID),
-		Code:       fmt.Sprintf("TESTSCHOOL-%d", ID),
-		Name:       utils.RandomString(10),
-		Office:     utils.RandomString(10),
-		OfficeID:   sql.NullInt64{Int64: int64(1), Valid: true},
-		Province:   "Test Province",
-		Regency:    "Test Regency",
-		District:   sql.NullString{String: "Test District", Valid: true},
-		ProvinceID: provinceID,
-		RegencyID:  regencyID,
-		DistrictID: districtID,
-		Email:      sql.NullString{String: fmt.Sprintf("test-%d@aksara.com", ID), Valid: true},
-		Phone:      sql.NullString{String: fmt.Sprintf("0812345678%d", ID), Valid: true},
-		Address:    sql.NullString{String: "Test Address", Valid: true},
-		LogoUrl:    sql.NullString{String: "logo_url", Valid: true},
-		CreatedBy:  userID,
+		ID:             int64(ID),
+		Code:           fmt.Sprintf("TESTSCHOOL-%d", ID),
+		Name:           utils.RandomString(10),
+		IsPublicSchool: true,
+		Office:         utils.RandomString(10),
+		OfficeID:       sql.NullInt64{Int64: int64(1), Valid: true},
+		Province:       "Test Province",
+		Regency:        "Test Regency",
+		District:       sql.NullString{String: "Test District", Valid: true},
+		ProvinceID:     provinceID,
+		RegencyID:      regencyID,
+		DistrictID:     districtID,
+		Email:          sql.NullString{String: fmt.Sprintf("test-%d@aksara.com", ID), Valid: true},
+		Phone:          sql.NullString{String: fmt.Sprintf("0812345678%d", ID), Valid: true},
+		Address:        sql.NullString{String: "Test Address", Valid: true},
+		LogoUrl:        sql.NullString{String: "logo_url", Valid: true},
+		CreatedBy:      userID,
 	}
 }
 
 func parseSchoolRowToGetSchoolByIdRowModel(model db.ListAllSchoolsRow) db.GetSchoolByIdRow {
 	return db.GetSchoolByIdRow{
-		ID:         int64(model.ID),
-		Code:       model.Code,
-		Name:       model.Name,
-		OfficeID:   sql.NullInt64{Int64: int64(model.OfficeID.Int64), Valid: true},
-		ProvinceID: int32(model.ProvinceID),
-		RegencyID:  int32(model.RegencyID),
-		DistrictID: int32(model.DistrictID),
-		Email:      sql.NullString{String: model.Email.String, Valid: true},
-		Phone:      sql.NullString{String: model.Phone.String, Valid: true},
-		Address:    sql.NullString{String: model.Address.String, Valid: true},
-		LogoUrl:    sql.NullString{String: model.LogoUrl.String, Valid: true},
-		CreatedBy:  model.CreatedBy,
+		ID:             int64(model.ID),
+		Code:           model.Code,
+		Name:           model.Name,
+		IsPublicSchool: model.IsPublicSchool,
+		OfficeID:       sql.NullInt64{Int64: int64(model.OfficeID.Int64), Valid: true},
+		ProvinceID:     int32(model.ProvinceID),
+		RegencyID:      int32(model.RegencyID),
+		DistrictID:     int32(model.DistrictID),
+		Email:          sql.NullString{String: model.Email.String, Valid: true},
+		Phone:          sql.NullString{String: model.Phone.String, Valid: true},
+		Address:        sql.NullString{String: model.Address.String, Valid: true},
+		LogoUrl:        sql.NullString{String: model.LogoUrl.String, Valid: true},
+		CreatedBy:      model.CreatedBy,
 	}
 }
 
 func parseSchoolRowToSchoolModel(model db.ListAllSchoolsRow) db.Schools {
 	return db.Schools{
-		ID:         int64(model.ID),
-		Code:       model.Code,
-		Name:       model.Name,
-		OfficeID:   sql.NullInt64{Int64: int64(model.OfficeID.Int64), Valid: true},
-		ProvinceID: int32(model.ProvinceID),
-		RegencyID:  int32(model.RegencyID),
-		DistrictID: int32(model.DistrictID),
-		Email:      sql.NullString{String: model.Email.String, Valid: true},
-		Phone:      sql.NullString{String: model.Phone.String, Valid: true},
-		Address:    sql.NullString{String: model.Address.String, Valid: true},
-		LogoUrl:    sql.NullString{String: model.LogoUrl.String, Valid: true},
-		CreatedBy:  model.CreatedBy,
+		ID:             int64(model.ID),
+		Code:           model.Code,
+		Name:           model.Name,
+		IsPublicSchool: model.IsPublicSchool,
+		OfficeID:       sql.NullInt64{Int64: int64(model.OfficeID.Int64), Valid: true},
+		ProvinceID:     int32(model.ProvinceID),
+		RegencyID:      int32(model.RegencyID),
+		DistrictID:     int32(model.DistrictID),
+		Email:          sql.NullString{String: model.Email.String, Valid: true},
+		Phone:          sql.NullString{String: model.Phone.String, Valid: true},
+		Address:        sql.NullString{String: model.Address.String, Valid: true},
+		LogoUrl:        sql.NullString{String: model.LogoUrl.String, Valid: true},
+		CreatedBy:      model.CreatedBy,
 	}
 }
 
-func parseMapToSchoolModelDetail(data map[string]interface{}) db.GetSchoolByIdRow {
-	school := db.GetSchoolByIdRow{}
+func parseMapToSchoolModelDetail(data map[string]any) db.GetSchoolByIdRow {
+	school := db.GetSchoolByIdRow{
+		IsPublicSchool: data["is_public_school"].(bool),
+	}
 
 	if id, ok := data["id"].(float64); ok {
 		school.ID = int64(id)
@@ -805,8 +814,10 @@ func parseMapToSchoolModelDetail(data map[string]interface{}) db.GetSchoolByIdRo
 	return school
 }
 
-func parseMapToSchoolModel(data map[string]interface{}) db.Schools {
-	school := db.Schools{}
+func parseMapToSchoolModel(data map[string]any) db.Schools {
+	school := db.Schools{
+		IsPublicSchool: data["is_public_school"].(bool),
+	}
 
 	if id, ok := data["id"].(float64); ok {
 		school.ID = int64(id)

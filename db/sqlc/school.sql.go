@@ -14,6 +14,7 @@ const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   code,
   name,
+  is_public_school,
   office_id,
   province_id,
   regency_id,
@@ -24,28 +25,30 @@ INSERT INTO schools (
   logo_url,
   created_by
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+RETURNING id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 type CreateSchoolParams struct {
-	Code       string         `json:"code"`
-	Name       string         `json:"name"`
-	OfficeID   sql.NullInt64  `json:"office_id"`
-	ProvinceID int32          `json:"province_id"`
-	RegencyID  int32          `json:"regency_id"`
-	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
-	Phone      sql.NullString `json:"phone"`
-	Address    sql.NullString `json:"address"`
-	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  int64          `json:"created_by"`
+	Code           string         `json:"code"`
+	Name           string         `json:"name"`
+	IsPublicSchool bool           `json:"is_public_school"`
+	OfficeID       sql.NullInt64  `json:"office_id"`
+	ProvinceID     int32          `json:"province_id"`
+	RegencyID      int32          `json:"regency_id"`
+	DistrictID     int32          `json:"district_id"`
+	Email          sql.NullString `json:"email"`
+	Phone          sql.NullString `json:"phone"`
+	Address        sql.NullString `json:"address"`
+	LogoUrl        sql.NullString `json:"logo_url"`
+	CreatedBy      int64          `json:"created_by"`
 }
 
 func (q *Queries) CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Schools, error) {
 	row := q.db.QueryRowContext(ctx, createSchool,
 		arg.Code,
 		arg.Name,
+		arg.IsPublicSchool,
 		arg.OfficeID,
 		arg.ProvinceID,
 		arg.RegencyID,
@@ -61,6 +64,7 @@ func (q *Queries) CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Sc
 		&i.ID,
 		&i.Code,
 		&i.Name,
+		&i.IsPublicSchool,
 		&i.OfficeID,
 		&i.ProvinceID,
 		&i.RegencyID,
@@ -82,7 +86,7 @@ UPDATE schools
 SET deleted_at = CURRENT_TIMESTAMP
 WHERE id = $1
 AND deleted_at IS NULL
-RETURNING id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
+RETURNING id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 func (q *Queries) DeleteSchool(ctx context.Context, id int64) (sql.Result, error) {
@@ -90,7 +94,7 @@ func (q *Queries) DeleteSchool(ctx context.Context, id int64) (sql.Result, error
 }
 
 const getSchoolById = `-- name: GetSchoolById :one
-SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, 
+SELECT a.id, a.code, a.name, a.is_public_school, a.office_id, a.province_id, a.regency_id, 
 a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, 
 b.name as office, c.name as province, d.name as regency, e.name as district,
 a.created_at, a.updated_at
@@ -104,24 +108,25 @@ AND a.id = $1
 `
 
 type GetSchoolByIdRow struct {
-	ID         int64          `json:"id"`
-	Code       string         `json:"code"`
-	Name       string         `json:"name"`
-	OfficeID   sql.NullInt64  `json:"office_id"`
-	ProvinceID int32          `json:"province_id"`
-	RegencyID  int32          `json:"regency_id"`
-	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
-	Phone      sql.NullString `json:"phone"`
-	Address    sql.NullString `json:"address"`
-	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  int64          `json:"created_by"`
-	Office     string         `json:"office"`
-	Province   string         `json:"province"`
-	Regency    string         `json:"regency"`
-	District   sql.NullString `json:"district"`
-	CreatedAt  sql.NullTime   `json:"created_at"`
-	UpdatedAt  sql.NullTime   `json:"updated_at"`
+	ID             int64          `json:"id"`
+	Code           string         `json:"code"`
+	Name           string         `json:"name"`
+	IsPublicSchool bool           `json:"is_public_school"`
+	OfficeID       sql.NullInt64  `json:"office_id"`
+	ProvinceID     int32          `json:"province_id"`
+	RegencyID      int32          `json:"regency_id"`
+	DistrictID     int32          `json:"district_id"`
+	Email          sql.NullString `json:"email"`
+	Phone          sql.NullString `json:"phone"`
+	Address        sql.NullString `json:"address"`
+	LogoUrl        sql.NullString `json:"logo_url"`
+	CreatedBy      int64          `json:"created_by"`
+	Office         string         `json:"office"`
+	Province       string         `json:"province"`
+	Regency        string         `json:"regency"`
+	District       sql.NullString `json:"district"`
+	CreatedAt      sql.NullTime   `json:"created_at"`
+	UpdatedAt      sql.NullTime   `json:"updated_at"`
 }
 
 func (q *Queries) GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow, error) {
@@ -131,6 +136,7 @@ func (q *Queries) GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow
 		&i.ID,
 		&i.Code,
 		&i.Name,
+		&i.IsPublicSchool,
 		&i.OfficeID,
 		&i.ProvinceID,
 		&i.RegencyID,
@@ -151,7 +157,7 @@ func (q *Queries) GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow
 }
 
 const listAllSchools = `-- name: ListAllSchools :many
-SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
+SELECT a.id, a.code, a.name, a.is_public_school, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
 FROM schools a
 JOIN offices b ON a.office_id = b.id
 JOIN loc_provinces c ON a.province_id = c.id
@@ -168,22 +174,23 @@ type ListAllSchoolsParams struct {
 }
 
 type ListAllSchoolsRow struct {
-	ID         int64          `json:"id"`
-	Code       string         `json:"code"`
-	Name       string         `json:"name"`
-	OfficeID   sql.NullInt64  `json:"office_id"`
-	ProvinceID int32          `json:"province_id"`
-	RegencyID  int32          `json:"regency_id"`
-	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
-	Phone      sql.NullString `json:"phone"`
-	Address    sql.NullString `json:"address"`
-	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  int64          `json:"created_by"`
-	Office     string         `json:"office"`
-	Province   string         `json:"province"`
-	Regency    string         `json:"regency"`
-	District   sql.NullString `json:"district"`
+	ID             int64          `json:"id"`
+	Code           string         `json:"code"`
+	Name           string         `json:"name"`
+	IsPublicSchool bool           `json:"is_public_school"`
+	OfficeID       sql.NullInt64  `json:"office_id"`
+	ProvinceID     int32          `json:"province_id"`
+	RegencyID      int32          `json:"regency_id"`
+	DistrictID     int32          `json:"district_id"`
+	Email          sql.NullString `json:"email"`
+	Phone          sql.NullString `json:"phone"`
+	Address        sql.NullString `json:"address"`
+	LogoUrl        sql.NullString `json:"logo_url"`
+	CreatedBy      int64          `json:"created_by"`
+	Office         string         `json:"office"`
+	Province       string         `json:"province"`
+	Regency        string         `json:"regency"`
+	District       sql.NullString `json:"district"`
 }
 
 func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]ListAllSchoolsRow, error) {
@@ -199,6 +206,7 @@ func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams)
 			&i.ID,
 			&i.Code,
 			&i.Name,
+			&i.IsPublicSchool,
 			&i.OfficeID,
 			&i.ProvinceID,
 			&i.RegencyID,
@@ -227,7 +235,7 @@ func (q *Queries) ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams)
 }
 
 const listSchoolsByDistrict = `-- name: ListSchoolsByDistrict :many
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
+SELECT id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
 WHERE deleted_at IS NULL
 AND district_id = $1 
 ORDER BY id
@@ -253,6 +261,7 @@ func (q *Queries) ListSchoolsByDistrict(ctx context.Context, arg *ListSchoolsByD
 			&i.ID,
 			&i.Code,
 			&i.Name,
+			&i.IsPublicSchool,
 			&i.OfficeID,
 			&i.ProvinceID,
 			&i.RegencyID,
@@ -280,7 +289,7 @@ func (q *Queries) ListSchoolsByDistrict(ctx context.Context, arg *ListSchoolsByD
 }
 
 const listSchoolsByOffice = `-- name: ListSchoolsByOffice :many
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
+SELECT id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
 WHERE deleted_at IS NULL
 AND office_id = $1 
 ORDER BY id
@@ -306,6 +315,7 @@ func (q *Queries) ListSchoolsByOffice(ctx context.Context, arg *ListSchoolsByOff
 			&i.ID,
 			&i.Code,
 			&i.Name,
+			&i.IsPublicSchool,
 			&i.OfficeID,
 			&i.ProvinceID,
 			&i.RegencyID,
@@ -333,7 +343,7 @@ func (q *Queries) ListSchoolsByOffice(ctx context.Context, arg *ListSchoolsByOff
 }
 
 const listSchoolsByProvince = `-- name: ListSchoolsByProvince :many
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
+SELECT id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
 WHERE deleted_at IS NULL
 AND province_id = $1 
 ORDER BY id
@@ -359,6 +369,7 @@ func (q *Queries) ListSchoolsByProvince(ctx context.Context, arg *ListSchoolsByP
 			&i.ID,
 			&i.Code,
 			&i.Name,
+			&i.IsPublicSchool,
 			&i.OfficeID,
 			&i.ProvinceID,
 			&i.RegencyID,
@@ -386,7 +397,7 @@ func (q *Queries) ListSchoolsByProvince(ctx context.Context, arg *ListSchoolsByP
 }
 
 const listSchoolsByRegency = `-- name: ListSchoolsByRegency :many
-SELECT id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
+SELECT id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at FROM schools
 WHERE deleted_at IS NULL
 AND regency_id = $1 
 ORDER BY id
@@ -412,6 +423,7 @@ func (q *Queries) ListSchoolsByRegency(ctx context.Context, arg *ListSchoolsByRe
 			&i.ID,
 			&i.Code,
 			&i.Name,
+			&i.IsPublicSchool,
 			&i.OfficeID,
 			&i.ProvinceID,
 			&i.RegencyID,
@@ -464,7 +476,7 @@ SET name = $1,
   updated_at = CURRENT_TIMESTAMP
 WHERE id = $10  
 AND deleted_at IS NULL
-RETURNING id, code, name, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
+RETURNING id, code, name, is_public_school, office_id, province_id, regency_id, district_id, email, phone, address, logo_url, created_by, created_at, updated_at, deleted_at
 `
 
 type UpdateSchoolParams struct {
@@ -498,6 +510,7 @@ func (q *Queries) UpdateSchool(ctx context.Context, arg *UpdateSchoolParams) (Sc
 		&i.ID,
 		&i.Code,
 		&i.Name,
+		&i.IsPublicSchool,
 		&i.OfficeID,
 		&i.ProvinceID,
 		&i.RegencyID,

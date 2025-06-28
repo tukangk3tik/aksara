@@ -1,11 +1,12 @@
-import { District, Province, Regency } from "./location";
 import { MetaData } from "./pagination";
-import { SelectOption } from "./utils";
 
-export interface Office {
+export interface School {
   id: number;
   code: string;
   name: string;
+  office_id: number;
+  office: string;
+  is_public_school: boolean;
   province_id: number;
   regency_id: number;
   district_id: number;
@@ -18,34 +19,23 @@ export interface Office {
   logo_url: string;
 }
 
-export interface CreateUpdateOffice {
+export interface CreateUpdateSchool {
   id?: number;
   code: string;
   name: string;
   province_id: number;
   regency_id: number;
   district_id: number;
+  office_id: number;
+  is_public_school: boolean;
   email: string;
   phone: string;
   address: string;
   logo_url: string;
 }
 
-export interface ListOfficeResponse {
+export interface ListSchoolResponse {
   message: string;
-  data: Office[];
+  data: School[];
   meta_data: MetaData;
-}
-
-export interface SelectOptionOffice extends SelectOption {
-  additional_data: {
-    province: Province;
-    regency: Regency;
-    district: District;
-  };
-}
-
-export interface SelectOptionOfficeResponse {
-  message?: string;
-  data: SelectOptionOffice[];
 }

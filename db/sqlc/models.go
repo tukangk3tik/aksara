@@ -45,21 +45,22 @@ type Offices struct {
 }
 
 type Schools struct {
-	ID         int64          `json:"id"`
-	Code       string         `json:"code"`
-	Name       string         `json:"name"`
-	OfficeID   sql.NullInt64  `json:"office_id"`
-	ProvinceID int32          `json:"province_id"`
-	RegencyID  int32          `json:"regency_id"`
-	DistrictID int32          `json:"district_id"`
-	Email      sql.NullString `json:"email"`
-	Phone      sql.NullString `json:"phone"`
-	Address    sql.NullString `json:"address"`
-	LogoUrl    sql.NullString `json:"logo_url"`
-	CreatedBy  int64          `json:"created_by"`
-	CreatedAt  sql.NullTime   `json:"created_at"`
-	UpdatedAt  sql.NullTime   `json:"updated_at"`
-	DeletedAt  sql.NullTime   `json:"deleted_at"`
+	ID             int64          `json:"id"`
+	Code           string         `json:"code"`
+	Name           string         `json:"name"`
+	IsPublicSchool bool           `json:"is_public_school"`
+	OfficeID       sql.NullInt64  `json:"office_id"`
+	ProvinceID     int32          `json:"province_id"`
+	RegencyID      int32          `json:"regency_id"`
+	DistrictID     int32          `json:"district_id"`
+	Email          sql.NullString `json:"email"`
+	Phone          sql.NullString `json:"phone"`
+	Address        sql.NullString `json:"address"`
+	LogoUrl        sql.NullString `json:"logo_url"`
+	CreatedBy      int64          `json:"created_by"`
+	CreatedAt      sql.NullTime   `json:"created_at"`
+	UpdatedAt      sql.NullTime   `json:"updated_at"`
+	DeletedAt      sql.NullTime   `json:"deleted_at"`
 }
 
 type Sessions struct {

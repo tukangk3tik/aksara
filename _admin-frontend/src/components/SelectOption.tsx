@@ -1,11 +1,11 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from "@headlessui/react";
 import { FiChevronDown, FiSearch, FiX } from "react-icons/fi";
 import { Fragment } from "react";
-import { SelectOption, SelectOptionLocationData } from "../types/utils";
+import { SelectOption, SelectOptionData } from "../types/utils";
 
 
 interface SelectSearchOptionProps {
-  data: SelectOptionLocationData;
+  data: SelectOptionData;
   isDisable: boolean;
   handleChange: (value: SelectOption) => void;
   handleQueryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
