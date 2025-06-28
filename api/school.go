@@ -107,17 +107,18 @@ func (server *Server) createSchool(ctx *gin.Context) {
 	userID := ctx.MustGet("user_id").(uint64)
 
 	school, err := server.store.CreateSchool(ctx, &db.CreateSchoolParams{
-		Code:       req.Code,
-		Name:       req.Name,
-		OfficeID:   sql.NullInt64{Int64: int64(userID), Valid: true},
-		ProvinceID: req.ProvinceID,
-		RegencyID:  req.RegencyID,
-		DistrictID: req.DistrictID,
-		Email:      sql.NullString{String: req.Email, Valid: req.Email != ""},
-		Phone:      sql.NullString{String: req.Phone, Valid: req.Phone != ""},
-		Address:    sql.NullString{String: req.Address, Valid: req.Address != ""},
-		LogoUrl:    sql.NullString{String: req.LogoURL, Valid: req.LogoURL != ""},
-		CreatedBy:  int64(userID),
+		Code:           req.Code,
+		Name:           req.Name,
+		IsPublicSchool: req.IsPublicSchool,
+		OfficeID:       sql.NullInt64{Int64: int64(userID), Valid: true},
+		ProvinceID:     req.ProvinceID,
+		RegencyID:      req.RegencyID,
+		DistrictID:     req.DistrictID,
+		Email:          sql.NullString{String: req.Email, Valid: req.Email != ""},
+		Phone:          sql.NullString{String: req.Phone, Valid: req.Phone != ""},
+		Address:        sql.NullString{String: req.Address, Valid: req.Address != ""},
+		LogoUrl:        sql.NullString{String: req.LogoURL, Valid: req.LogoURL != ""},
+		CreatedBy:      int64(userID),
 	})
 
 	if err != nil {
@@ -128,10 +129,11 @@ func (server *Server) createSchool(ctx *gin.Context) {
 				fieldName := ""
 				errorMsg := ""
 
-				if constraintName == "schools_code_key" {
+				switch constraintName {
+				case "schools_code_key":
 					fieldName = "code"
 					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Kode")
-				} else if constraintName == "schools_email_key" {
+				case "schools_email_key":
 					fieldName = "email"
 					errorMsg = fmt.Sprintf(utils.ErrorCodeMap["DUPLICATE_ENTRY"], "Email")
 				}
@@ -145,7 +147,7 @@ func (server *Server) createSchool(ctx *gin.Context) {
 				return
 			}
 		}
-		
+
 		log.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
 		return
@@ -267,59 +269,62 @@ func (server *Server) deleteSchool(ctx *gin.Context) {
 
 func parseSchoolRowModelToResponse(model db.ListAllSchoolsRow) response.SchoolResponse {
 	return response.SchoolResponse{
-		ID:         int64(model.ID),
-		Code:       model.Code,
-		Name:       model.Name,
-		Office:     model.Office,
-		OfficeID:   int64(model.OfficeID.Int64),
-		Province:   model.Province,
-		Regency:    model.Regency,
-		District:   model.District.String,
-		ProvinceID: int64(model.ProvinceID),
-		RegencyID:  int64(model.RegencyID),
-		DistrictID: int64(model.DistrictID),
-		Email:      model.Email.String,
-		Phone:      model.Phone.String,
-		Address:    model.Address.String,
-		LogoURL:    model.LogoUrl.String,
-		CreatedBy:  model.CreatedBy,
+		ID:             int64(model.ID),
+		Code:           model.Code,
+		Name:           model.Name,
+		IsPublicSchool: model.IsPublicSchool,
+		Office:         model.Office,
+		OfficeID:       int64(model.OfficeID.Int64),
+		Province:       model.Province,
+		Regency:        model.Regency,
+		District:       model.District.String,
+		ProvinceID:     int64(model.ProvinceID),
+		RegencyID:      int64(model.RegencyID),
+		DistrictID:     int64(model.DistrictID),
+		Email:          model.Email.String,
+		Phone:          model.Phone.String,
+		Address:        model.Address.String,
+		LogoURL:        model.LogoUrl.String,
+		CreatedBy:      model.CreatedBy,
 	}
 }
 
 func parseGetSchoolByIdRowModelToResponse(model db.GetSchoolByIdRow) response.SchoolResponse {
 	return response.SchoolResponse{
-		ID:         int64(model.ID),
-		Code:       model.Code,
-		Name:       model.Name,
-		Office:     model.Office,
-		OfficeID:   int64(model.OfficeID.Int64),
-		Province:   model.Province,
-		Regency:    model.Regency,
-		District:   model.District.String,
-		ProvinceID: int64(model.ProvinceID),
-		RegencyID:  int64(model.RegencyID),
-		DistrictID: int64(model.DistrictID),
-		Email:      model.Email.String,
-		Phone:      model.Phone.String,
-		Address:    model.Address.String,
-		LogoURL:    model.LogoUrl.String,
-		CreatedBy:  model.CreatedBy,
+		ID:             int64(model.ID),
+		Code:           model.Code,
+		Name:           model.Name,
+		IsPublicSchool: model.IsPublicSchool,
+		Office:         model.Office,
+		OfficeID:       int64(model.OfficeID.Int64),
+		Province:       model.Province,
+		Regency:        model.Regency,
+		District:       model.District.String,
+		ProvinceID:     int64(model.ProvinceID),
+		RegencyID:      int64(model.RegencyID),
+		DistrictID:     int64(model.DistrictID),
+		Email:          model.Email.String,
+		Phone:          model.Phone.String,
+		Address:        model.Address.String,
+		LogoURL:        model.LogoUrl.String,
+		CreatedBy:      model.CreatedBy,
 	}
 }
 
 func parseSchoolModelToResponse(model db.Schools) response.SchoolResponse {
 	return response.SchoolResponse{
-		ID:         int64(model.ID),
-		Code:       model.Code,
-		Name:       model.Name,
-		OfficeID:   int64(model.OfficeID.Int64),
-		ProvinceID: int64(model.ProvinceID),
-		RegencyID:  int64(model.RegencyID),
-		DistrictID: int64(model.DistrictID),
-		Email:      model.Email.String,
-		Phone:      model.Phone.String,
-		Address:    model.Address.String,
-		LogoURL:    model.LogoUrl.String,
-		CreatedBy:  model.CreatedBy,
+		ID:             int64(model.ID),
+		Code:           model.Code,
+		Name:           model.Name,
+		IsPublicSchool: model.IsPublicSchool,
+		OfficeID:       int64(model.OfficeID.Int64),
+		ProvinceID:     int64(model.ProvinceID),
+		RegencyID:      int64(model.RegencyID),
+		DistrictID:     int64(model.DistrictID),
+		Email:          model.Email.String,
+		Phone:          model.Phone.String,
+		Address:        model.Address.String,
+		LogoURL:        model.LogoUrl.String,
+		CreatedBy:      model.CreatedBy,
 	}
 }

@@ -234,6 +234,47 @@ func (server *Server) deleteOffice(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.TrxSuccessResponse{TraceID: traceID, Data: map[string]any{"id": params.ID}})
 }
 
+func (server *Server) fetchOfficesSelectOption(ctx *gin.Context) {
+	var req request.SelectOptionRequest
+	log := utils.FromContext(ctx.Request.Context())
+	log = log.With(zap.String("func", "fetchOfficesSelectOption"))
+
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		log.Warn(err.Error())
+		ctx.JSON(http.StatusBadRequest, response.BuildErrorResponse("BAD_REQUEST", utils.ErrorCodeMap["BAD_REQUEST"], nil))
+		return
+	}
+
+	arg := db.ListOfficesWithFiltersParams{
+		Name:   sql.NullString{String: fmt.Sprintf("%%%s%%", req.SearchQuery), Valid: req.SearchQuery != ""},
+		Limit:  10,
+		Offset: 0,
+	}
+
+	traceID := ctx.MustGet("trace_id").(string)
+
+	offices, err := server.store.ListOfficesWithFilters(ctx, &arg)
+	if err != nil {
+		server.logger.Error(utils.LogErrorMessageBuilder("trx failed to get provinces", traceID), zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, response.BuildErrorResponse("INTERNAL_SERVER_ERROR", utils.ErrorCodeMap["INTERNAL_SERVER_ERROR"], nil))
+		return
+	}
+
+	items := []response.SelectOptionResponse{}
+	for _, item := range offices {
+		items = append(items, parseOfficeModelToSelectOptionResponse(item))
+	}
+
+	ctx.JSON(http.StatusOK, response.DataTableResponse{
+		Message: "success",
+		Data:    items,
+		MetaData: response.DataTableMetaData{
+			CurrentPage: 1,
+			PerPage:     10,
+			TotalItems:  int64(len(items)),
+		}})
+}
+
 func parseOfficeRowModelToResponse(model db.ListAllOfficesRow) response.OfficeResponse {
 	return response.OfficeResponse{
 		ID:         int64(model.ID),
@@ -266,5 +307,26 @@ func parseOfficeModelToResponse(model db.Offices) response.OfficeResponse {
 		Address:    model.Address.String,
 		LogoURL:    model.LogoUrl.String,
 		CreatedBy:  model.CreatedBy,
+	}
+}
+
+func parseOfficeModelToSelectOptionResponse(model db.ListOfficesWithFiltersRow) response.SelectOptionResponse {
+	return response.SelectOptionResponse{
+		ID:   int64(model.ID),
+		Name: model.Name,
+		AdditionalData: map[string]any{
+			"province": map[string]any{
+				"id":   int64(model.ProvinceID),
+				"name": model.Province,
+			},
+			"regency": map[string]any{
+				"id":   int64(model.RegencyID),
+				"name": model.Regency,
+			},
+			"district": map[string]any{
+				"id":   int64(model.DistrictID),
+				"name": model.District.String,
+			},
+		},
 	}
 }

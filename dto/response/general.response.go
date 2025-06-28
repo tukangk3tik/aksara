@@ -64,3 +64,9 @@ type DataTableMetaData struct {
 	PerPage     int32 `json:"per_page"`
 	TotalItems  int64 `json:"total_items"`
 }
+
+type SelectOptionResponse struct {
+	ID             int64          `json:"id"`
+	Name           string         `json:"name"`
+	AdditionalData map[string]any `json:"additional_data"`
+}

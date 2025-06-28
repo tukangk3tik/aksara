@@ -1,4 +1,4 @@
-import { SelectOption } from "./utils";
+import { SelectOption, SelectOptionProps } from "./utils";
 
 export interface Province extends SelectOption {}
 
@@ -6,6 +6,12 @@ export interface Regency extends SelectOption {}
 
 export interface District extends SelectOption {}
 
+// interface for select options
+export interface LocationData {
+  province: SelectOptionProps;
+  regency: SelectOptionProps;
+  district: SelectOptionProps;
+}
 
 export interface ListProvinceResponse {
   data: Province[];

@@ -180,16 +180,13 @@ const Office: React.FC = () => {
         // Replace with your actual API endpoint
         const response = await getOffices(page, metadata.per_page);
         
-        if (response.data.length > 0) {
-          setOffices(response.data);
-          setMetadata(response.meta_data);
-        }
+        setOffices(response.data);
+        setMetadata(response.meta_data);
       } catch (error) {
         console.error('Error fetching offices:', error);
       } finally {
         setLoading(false);
       }
-      setLoading(false);
     }, 500);
   };
 

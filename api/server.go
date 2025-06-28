@@ -75,6 +75,7 @@ func (server *Server) setupRouter(tokenMaker security.TokenMaker) {
 	officeGroup.POST("", server.createOffice)
 	officeGroup.PUT("/:id", server.updateOffice)
 	officeGroup.DELETE("/:id", server.deleteOffice)
+	officeGroup.GET("/select-option", server.fetchOfficesSelectOption)
 
 	// school router
 	schoolGroup := router.Group("/schools")

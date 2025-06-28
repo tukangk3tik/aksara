@@ -2,6 +2,7 @@
 INSERT INTO schools (
   code,
   name,
+  is_public_school,
   office_id,
   province_id,
   regency_id,
@@ -12,11 +13,11 @@ INSERT INTO schools (
   logo_url,
   created_by
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING *;
 
 -- name: GetSchoolById :one
-SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, 
+SELECT a.id, a.code, a.name, a.is_public_school, a.office_id, a.province_id, a.regency_id, 
 a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, 
 b.name as office, c.name as province, d.name as regency, e.name as district,
 a.created_at, a.updated_at
@@ -29,7 +30,7 @@ WHERE a.deleted_at IS NULL
 AND a.id = $1;
 
 -- name: ListAllSchools :many
-SELECT a.id, a.code, a.name, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
+SELECT a.id, a.code, a.name, a.is_public_school, a.office_id, a.province_id, a.regency_id, a.district_id, a.email, a.phone, a.address, a.logo_url, a.created_by, b.name as office, c.name as province, d.name as regency, e.name as district 
 FROM schools a
 JOIN offices b ON a.office_id = b.id
 JOIN loc_provinces c ON a.province_id = c.id

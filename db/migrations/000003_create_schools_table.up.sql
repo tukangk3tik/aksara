@@ -2,6 +2,7 @@ CREATE TABLE schools (
     id BIGSERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
+    is_public_school BOOLEAN NOT NULL,
     office_id BIGINT,
     province_id INTEGER NOT NULL,
     regency_id INTEGER NOT NULL,
