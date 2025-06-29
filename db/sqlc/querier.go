@@ -10,27 +10,34 @@ import (
 )
 
 type Querier interface {
+	ClearLOVs(ctx context.Context) error
 	ClearOffices(ctx context.Context) error
 	ClearSchools(ctx context.Context) error
 	ClearUserRoles(ctx context.Context) error
 	ClearUsers(ctx context.Context) error
+	CreateLov(ctx context.Context, arg *CreateLovParams) (Lovs, error)
 	CreateOffice(ctx context.Context, arg *CreateOfficeParams) (Offices, error)
 	CreateSchool(ctx context.Context, arg *CreateSchoolParams) (Schools, error)
 	CreateUser(ctx context.Context, arg *CreateUserParams) (Users, error)
 	CreateUserRole(ctx context.Context, arg *CreateUserRoleParams) (UserRoles, error)
+	DeleteLov(ctx context.Context, id int64) (sql.Result, error)
 	DeleteOffice(ctx context.Context, id int64) (sql.Result, error)
 	DeleteSchool(ctx context.Context, id int64) (sql.Result, error)
 	DeleteUser(ctx context.Context, id int64) (sql.Result, error)
 	DeleteUserRole(ctx context.Context, id int32) (sql.Result, error)
+	GetLovById(ctx context.Context, id int64) (Lovs, error)
+	GetLovByParamKey(ctx context.Context, paramKey string) (Lovs, error)
 	GetOfficeById(ctx context.Context, id int64) (GetOfficeByIdRow, error)
 	GetSchoolById(ctx context.Context, id int64) (GetSchoolByIdRow, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserById(ctx context.Context, id int64) (Users, error)
 	GetUserRoleById(ctx context.Context, id int32) (UserRoles, error)
+	ListAllLovs(ctx context.Context, arg *ListAllLovsParams) ([]Lovs, error)
 	ListAllOffices(ctx context.Context, arg *ListAllOfficesParams) ([]ListAllOfficesRow, error)
 	ListAllSchools(ctx context.Context, arg *ListAllSchoolsParams) ([]ListAllSchoolsRow, error)
 	ListAllUserRoles(ctx context.Context, arg *ListAllUserRolesParams) ([]UserRoles, error)
 	ListAllUsers(ctx context.Context, arg *ListAllUsersParams) ([]Users, error)
+	ListLovByGroupKey(ctx context.Context, arg *ListLovByGroupKeyParams) ([]Lovs, error)
 	// Optional province filter
 	// Optional regency filter
 	// Optional district filter
@@ -43,14 +50,17 @@ type Querier interface {
 	LocationDistrictByRegency(ctx context.Context, arg *LocationDistrictByRegencyParams) ([]LocDistricts, error)
 	LocationProvince(ctx context.Context, arg *LocationProvinceParams) ([]LocProvinces, error)
 	LocationRegencyByProvince(ctx context.Context, arg *LocationRegencyByProvinceParams) ([]LocRegencies, error)
+	TotalListAllLovs(ctx context.Context) (int64, error)
 	TotalListAllOffices(ctx context.Context) (int64, error)
 	TotalListAllSchools(ctx context.Context) (int64, error)
 	TotalListAllUsers(ctx context.Context) (int64, error)
+	TotalListLovByGroupKey(ctx context.Context, arg *TotalListLovByGroupKeyParams) (int64, error)
 	// Optional province filter
 	// Optional regency filter
 	// Optional district filter
 	// Optional name search
 	TotalListOfficesWithFilters(ctx context.Context, arg *TotalListOfficesWithFiltersParams) (int64, error)
+	UpdateLov(ctx context.Context, arg *UpdateLovParams) (Lovs, error)
 	UpdateOffice(ctx context.Context, arg *UpdateOfficeParams) (Offices, error)
 	UpdateSchool(ctx context.Context, arg *UpdateSchoolParams) (Schools, error)
 	UpdateUser(ctx context.Context, arg *UpdateUserParams) (Users, error)

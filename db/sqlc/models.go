@@ -9,6 +9,33 @@ import (
 	"time"
 )
 
+type EmployeeRoles struct {
+	ID         int64        `json:"id"`
+	EmployeeID int64        `json:"employee_id"`
+	RoleID     int64        `json:"role_id"`
+	CreatedAt  sql.NullTime `json:"created_at"`
+	UpdatedAt  sql.NullTime `json:"updated_at"`
+	DeletedAt  sql.NullTime `json:"deleted_at"`
+}
+
+type Employees struct {
+	ID                     int64          `json:"id"`
+	UserID                 sql.NullInt64  `json:"user_id"`
+	Fullname               sql.NullString `json:"fullname"`
+	ResidentIdentityNumber sql.NullString `json:"resident_identity_number"`
+	EmployeeIdentityNumber sql.NullString `json:"employee_identity_number"`
+	Gender                 sql.NullInt16  `json:"gender"`
+	Birthdate              sql.NullTime   `json:"birthdate"`
+	Address                sql.NullString `json:"address"`
+	Religion               sql.NullInt32  `json:"religion"`
+	Birthday               sql.NullTime   `json:"birthday"`
+	BirthPlace             sql.NullString `json:"birth_place"`
+	Photo                  sql.NullString `json:"photo"`
+	CreatedAt              sql.NullTime   `json:"created_at"`
+	UpdatedAt              sql.NullTime   `json:"updated_at"`
+	DeletedAt              sql.NullTime   `json:"deleted_at"`
+}
+
 type LocDistricts struct {
 	ID         int32         `json:"id"`
 	Name       string        `json:"name"`
@@ -25,6 +52,17 @@ type LocRegencies struct {
 	ID         int32  `json:"id"`
 	Name       string `json:"name"`
 	ProvinceID int32  `json:"province_id"`
+}
+
+type Lovs struct {
+	ID               int64         `json:"id"`
+	GroupKey         string        `json:"group_key"`
+	ParamKey         string        `json:"param_key"`
+	ParamDescription string        `json:"param_description"`
+	ParentID         sql.NullInt64 `json:"parent_id"`
+	CreatedAt        time.Time     `json:"created_at"`
+	UpdatedAt        time.Time     `json:"updated_at"`
+	DeletedAt        sql.NullTime  `json:"deleted_at"`
 }
 
 type Offices struct {

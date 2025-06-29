@@ -9,6 +9,15 @@ import (
 	"context"
 )
 
+const clearLOVs = `-- name: ClearLOVs :exec
+TRUNCATE TABLE lovs RESTART IDENTITY CASCADE
+`
+
+func (q *Queries) ClearLOVs(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearLOVs)
+	return err
+}
+
 const clearOffices = `-- name: ClearOffices :exec
 TRUNCATE TABLE offices RESTART IDENTITY CASCADE
 `

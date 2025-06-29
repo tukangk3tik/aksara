@@ -10,6 +10,9 @@ migrate-down:
 migrate-down1:
 	migrate -path db/migrations -database "$(DB_URL)" -verbose down 1
 
+migrate-create:
+	migrate create -ext sql -dir db/migrations -seq "$(NAME)"
+
 migrate-seed:
 	migrate -path db/seed -database "$(DB_URL)" -verbose up 1
 

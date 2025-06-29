@@ -1,0 +1,11 @@
+CREATE TABLE employee_roles (
+  id BIGSERIAL PRIMARY KEY,
+  employee_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL DEFAULT NULL,
+
+  FOREIGN KEY (employee_id) REFERENCES employees(id),
+  FOREIGN KEY (role_id) REFERENCES lovs(id)
+);

@@ -42,6 +42,20 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// ClearLOVs mocks base method.
+func (m *MockStore) ClearLOVs(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClearLOVs", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ClearLOVs indicates an expected call of ClearLOVs.
+func (mr *MockStoreMockRecorder) ClearLOVs(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearLOVs", reflect.TypeOf((*MockStore)(nil).ClearLOVs), ctx)
+}
+
 // ClearOffices mocks base method.
 func (m *MockStore) ClearOffices(ctx context.Context) error {
 	m.ctrl.T.Helper()
@@ -96,6 +110,21 @@ func (m *MockStore) ClearUsers(ctx context.Context) error {
 func (mr *MockStoreMockRecorder) ClearUsers(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearUsers", reflect.TypeOf((*MockStore)(nil).ClearUsers), ctx)
+}
+
+// CreateLov mocks base method.
+func (m *MockStore) CreateLov(ctx context.Context, arg *db.CreateLovParams) (db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLov", ctx, arg)
+	ret0, _ := ret[0].(db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLov indicates an expected call of CreateLov.
+func (mr *MockStoreMockRecorder) CreateLov(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLov", reflect.TypeOf((*MockStore)(nil).CreateLov), ctx, arg)
 }
 
 // CreateOffice mocks base method.
@@ -158,6 +187,21 @@ func (mr *MockStoreMockRecorder) CreateUserRole(ctx, arg any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserRole", reflect.TypeOf((*MockStore)(nil).CreateUserRole), ctx, arg)
 }
 
+// DeleteLov mocks base method.
+func (m *MockStore) DeleteLov(ctx context.Context, id int64) (sql.Result, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLov", ctx, id)
+	ret0, _ := ret[0].(sql.Result)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteLov indicates an expected call of DeleteLov.
+func (mr *MockStoreMockRecorder) DeleteLov(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLov", reflect.TypeOf((*MockStore)(nil).DeleteLov), ctx, id)
+}
+
 // DeleteOffice mocks base method.
 func (m *MockStore) DeleteOffice(ctx context.Context, id int64) (sql.Result, error) {
 	m.ctrl.T.Helper()
@@ -216,6 +260,36 @@ func (m *MockStore) DeleteUserRole(ctx context.Context, id int32) (sql.Result, e
 func (mr *MockStoreMockRecorder) DeleteUserRole(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserRole", reflect.TypeOf((*MockStore)(nil).DeleteUserRole), ctx, id)
+}
+
+// GetLovById mocks base method.
+func (m *MockStore) GetLovById(ctx context.Context, id int64) (db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLovById", ctx, id)
+	ret0, _ := ret[0].(db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLovById indicates an expected call of GetLovById.
+func (mr *MockStoreMockRecorder) GetLovById(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLovById", reflect.TypeOf((*MockStore)(nil).GetLovById), ctx, id)
+}
+
+// GetLovByParamKey mocks base method.
+func (m *MockStore) GetLovByParamKey(ctx context.Context, paramKey string) (db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLovByParamKey", ctx, paramKey)
+	ret0, _ := ret[0].(db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLovByParamKey indicates an expected call of GetLovByParamKey.
+func (mr *MockStoreMockRecorder) GetLovByParamKey(ctx, paramKey any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLovByParamKey", reflect.TypeOf((*MockStore)(nil).GetLovByParamKey), ctx, paramKey)
 }
 
 // GetOfficeById mocks base method.
@@ -293,6 +367,21 @@ func (mr *MockStoreMockRecorder) GetUserRoleById(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserRoleById", reflect.TypeOf((*MockStore)(nil).GetUserRoleById), ctx, id)
 }
 
+// ListAllLovs mocks base method.
+func (m *MockStore) ListAllLovs(ctx context.Context, arg *db.ListAllLovsParams) ([]db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllLovs", ctx, arg)
+	ret0, _ := ret[0].([]db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAllLovs indicates an expected call of ListAllLovs.
+func (mr *MockStoreMockRecorder) ListAllLovs(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllLovs", reflect.TypeOf((*MockStore)(nil).ListAllLovs), ctx, arg)
+}
+
 // ListAllOffices mocks base method.
 func (m *MockStore) ListAllOffices(ctx context.Context, arg *db.ListAllOfficesParams) ([]db.ListAllOfficesRow, error) {
 	m.ctrl.T.Helper()
@@ -351,6 +440,21 @@ func (m *MockStore) ListAllUsers(ctx context.Context, arg *db.ListAllUsersParams
 func (mr *MockStoreMockRecorder) ListAllUsers(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllUsers", reflect.TypeOf((*MockStore)(nil).ListAllUsers), ctx, arg)
+}
+
+// ListLovByGroupKey mocks base method.
+func (m *MockStore) ListLovByGroupKey(ctx context.Context, arg *db.ListLovByGroupKeyParams) ([]db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLovByGroupKey", ctx, arg)
+	ret0, _ := ret[0].([]db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListLovByGroupKey indicates an expected call of ListLovByGroupKey.
+func (mr *MockStoreMockRecorder) ListLovByGroupKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLovByGroupKey", reflect.TypeOf((*MockStore)(nil).ListLovByGroupKey), ctx, arg)
 }
 
 // ListOfficesWithFilters mocks base method.
@@ -473,6 +577,21 @@ func (mr *MockStoreMockRecorder) LocationRegencyByProvince(ctx, arg any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LocationRegencyByProvince", reflect.TypeOf((*MockStore)(nil).LocationRegencyByProvince), ctx, arg)
 }
 
+// TotalListAllLovs mocks base method.
+func (m *MockStore) TotalListAllLovs(ctx context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TotalListAllLovs", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TotalListAllLovs indicates an expected call of TotalListAllLovs.
+func (mr *MockStoreMockRecorder) TotalListAllLovs(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListAllLovs", reflect.TypeOf((*MockStore)(nil).TotalListAllLovs), ctx)
+}
+
 // TotalListAllOffices mocks base method.
 func (m *MockStore) TotalListAllOffices(ctx context.Context) (int64, error) {
 	m.ctrl.T.Helper()
@@ -518,6 +637,21 @@ func (mr *MockStoreMockRecorder) TotalListAllUsers(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListAllUsers", reflect.TypeOf((*MockStore)(nil).TotalListAllUsers), ctx)
 }
 
+// TotalListLovByGroupKey mocks base method.
+func (m *MockStore) TotalListLovByGroupKey(ctx context.Context, arg *db.TotalListLovByGroupKeyParams) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TotalListLovByGroupKey", ctx, arg)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TotalListLovByGroupKey indicates an expected call of TotalListLovByGroupKey.
+func (mr *MockStoreMockRecorder) TotalListLovByGroupKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListLovByGroupKey", reflect.TypeOf((*MockStore)(nil).TotalListLovByGroupKey), ctx, arg)
+}
+
 // TotalListOfficesWithFilters mocks base method.
 func (m *MockStore) TotalListOfficesWithFilters(ctx context.Context, arg *db.TotalListOfficesWithFiltersParams) (int64, error) {
 	m.ctrl.T.Helper()
@@ -531,6 +665,21 @@ func (m *MockStore) TotalListOfficesWithFilters(ctx context.Context, arg *db.Tot
 func (mr *MockStoreMockRecorder) TotalListOfficesWithFilters(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalListOfficesWithFilters", reflect.TypeOf((*MockStore)(nil).TotalListOfficesWithFilters), ctx, arg)
+}
+
+// UpdateLov mocks base method.
+func (m *MockStore) UpdateLov(ctx context.Context, arg *db.UpdateLovParams) (db.Lovs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLov", ctx, arg)
+	ret0, _ := ret[0].(db.Lovs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLov indicates an expected call of UpdateLov.
+func (mr *MockStoreMockRecorder) UpdateLov(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLov", reflect.TypeOf((*MockStore)(nil).UpdateLov), ctx, arg)
 }
 
 // UpdateOffice mocks base method.
